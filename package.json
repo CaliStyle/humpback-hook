@@ -25,7 +25,17 @@
     "url": "https://github.com/CaliStyle/humpback-hook/issues"
   },
   "homepage": "https://github.com/CaliStyle/humpback-hook",
+  "dependencies": {
+    "bcryptjs": "^2.1",
+    "passport": "^0.2.1",
+    "passport-http": "^0.2.2",
+    "passport-local": "^1.0.0",
+    "passport-facebook": "^1.0.3",
+    "passport-google": "^0.3.0",
+    "passport-twitter": "^1.0.2"
+  },
   "devDependencies": {
+    "lodash": ">2.4.0",
     "chai": "^2.0.0",
     "faker": "^2.1.2",
     "grunt": "^0.4.5",
