@@ -1,9 +1,8 @@
-var Sails = require('sails').Sails;
+'use strict';
+
+var sails = require('sails');
 
  describe('Basic tests ::', function() {
-
-     // Var to hold a running sails app instance
-     var sails;
 
      // Before running any tests, attempt to lift Sails
      before(function (done) {
@@ -12,18 +11,20 @@ var Sails = require('sails').Sails;
          this.timeout(11000);
 
          // Attempt to lift sails
-         Sails().lift({
+         sails.lift({
            hooks: {
              // Load the hook
-             "your-hook-name": require('../'),
+             'humpback-hook': require('../'),
              // Skip grunt (unless your hook uses it)
-             "grunt": false
+             'grunt': false
            },
-           log: {level: "error"}
-         },function (err, _sails) {
-           if (err) return done(err);
-           sails = _sails;
-           return done();
+           log: {level: 'error'}
+         },function (err, sails) {
+            if (err) {
+                return done(err);
+            } else {
+                done(null, sails);
+            }
          });
      });
 
