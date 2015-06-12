@@ -19,13 +19,13 @@ module.exports.passport = {
     strategy: require('passport-http').BasicStrategy,
     protocol: 'basic'
   },
-
+  /*
   google: {
     name: 'Google',
     protocol: 'openid',
     strategy: require('passport-google').Strategy
   }
-
+  */
   /*
   twitter: {
     name: 'Twitter',
@@ -36,7 +36,8 @@ module.exports.passport = {
       consumerSecret: 'your-consumer-secret'
     }
   },
-
+  */
+  /*
   github: {
     name: 'GitHub',
     protocol: 'oauth2',
@@ -46,7 +47,8 @@ module.exports.passport = {
       clientSecret: 'your-client-secret'
     }
   },
-
+  */
+  /*
   facebook: {
     name: 'Facebook',
     protocol: 'oauth2',

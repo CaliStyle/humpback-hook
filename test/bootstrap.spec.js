@@ -1,10 +1,10 @@
 'use strict';
 
 var sails = require('sails');
-
+var request = require('supertest');
 var ConfigOverrides = require('../config/env/testing');
 
-describe('Bootstrap tests ::', function() {
+//describe('Bootstrap tests ::', function() {
 
     // Before running any tests, attempt to lift Sails
     before(function (done) {
@@ -21,8 +21,16 @@ describe('Bootstrap tests ::', function() {
           //var Client = require('../assets/js/dependencies/sails.io.js');
           //global.io = new Client(require('socket.io-client'));
           //io.sails.url = 'http://localhost:1337/';
-          
-          done(null, sails);
+          request(sails.hooks.http.app)
+          .post('/register')
+          .send({
+            email: 'existing.user@email.com',
+            password: 'admin1234'
+          })
+          .end(function(err) {
+            done(err, sails);
+          });
+          //done(null, sails);
            
       });
     });
@@ -38,9 +46,11 @@ describe('Bootstrap tests ::', function() {
       return done();
     });
 
+    /*
     // Test that Sails can lift with the hook in place
     it ('sails does not crash', function() {
       return true;
     });
+  */
 
- });
+ //});

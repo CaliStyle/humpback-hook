@@ -1,11 +1,43 @@
 {
   "data": {
     "model": [],
-    "passport": [],
+    "passport": [
+      {
+        "protocol": "local",
+        "password": "$2a$08$1cDWr7ZSvbpMQmQtATGFd.uC0CyscDECruTif2HOtElGQPi0r7nUC",
+        "user": 9,
+        "createdAt": "2015-06-12T16:23:30.651Z",
+        "updatedAt": "2015-06-12T16:23:30.651Z",
+        "id": 5
+      },
+      {
+        "protocol": "local",
+        "password": "$2a$08$siB7onGnIDuiW2E865EcVOrCw1RwLq42/LCLQhnMz4wXS5v/3RwiW",
+        "user": 10,
+        "createdAt": "2015-06-12T16:23:31.471Z",
+        "updatedAt": "2015-06-12T16:23:31.471Z",
+        "id": 6
+      }
+    ],
     "permission": [],
     "role": [],
     "setting": [],
-    "user": [],
+    "user": [
+      {
+        "email": "existing.user@email.com",
+        "username": "existingDOTuserATemail.com",
+        "createdAt": "2015-06-12T16:23:30.511Z",
+        "updatedAt": "2015-06-12T16:23:30.511Z",
+        "id": 9
+      },
+      {
+        "email": "new.user@email.com",
+        "username": "newDOTuserATemail.com",
+        "createdAt": "2015-06-12T16:23:31.348Z",
+        "updatedAt": "2015-06-12T16:23:31.348Z",
+        "id": 10
+      }
+    ],
     "role_users__user_roles": []
   },
   "schema": {
@@ -210,8 +242,12 @@
     }
   },
   "counters": {
-    "passport": {},
-    "user": {},
+    "passport": {
+      "id": 6
+    },
+    "user": {
+      "id": 10
+    },
     "model": {},
     "permission": {},
     "role": {},

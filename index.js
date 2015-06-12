@@ -120,9 +120,10 @@ function _extendReq(req) {
 module.exports = function (sails) {
  	return { 
  		defaults: {
-      passport: {
-        // Default to look for a model w/ identity 'user'
-        userModelIdentity: 'user',
+      humpback: {
+      	// Default to look for a model w/ identity
+      	userModelIdentity: 'user',
+      	settingModelIdentity: 'setting'
       },
       permission: {
       	// Default to look for a model w/ identity
@@ -130,10 +131,6 @@ module.exports = function (sails) {
         modelModelIdentity: 'model',
         permissionModelIdentity: 'permission',
         roleModelIdentity: 'role'
-      },
-      humpback: {
-      	// Default to look for a model w/ identity
-      	settingModelIdentity: 'setting'
       }
     },
 		configure: function () {
@@ -148,10 +145,10 @@ module.exports = function (sails) {
 
 
 			// Validate `userModelIdentity` config
-      if (typeof sails.config.passport.userModelIdentity !== 'string') {
-        sails.config.passport.userModelIdentity = 'user';
+      if (typeof sails.config.humpback.userModelIdentity !== 'string') {
+        sails.config.humpback.userModelIdentity = 'user';
       }
-      sails.config.passport.userModelIdentity = sails.config.passport.userModelIdentity.toLowerCase();
+      sails.config.humpback.userModelIdentity = sails.config.humpback.userModelIdentity.toLowerCase();
 
       //wait for orm hook to be loaded
       if (sails.hooks.orm) {
@@ -179,20 +176,20 @@ module.exports = function (sails) {
       sails.after(eventsToWaitFor, function() {
         
         // Look up configured user model
-        var UserModel = sails.models[sails.config.passport.userModelIdentity],
+        var UserModel = sails.models[sails.config.humpback.userModelIdentity],
+        		SettingModel = sails.models[sails.config.humpback.settingModelIdentity],
        			PassportModel = sails.models[sails.config.permission.passportModelIdentity],
        			ModelModel = sails.models[sails.config.permission.modelModelIdentity],
        			PermissionModel = sails.models[sails.config.permission.permissionModelIdentity],
-       			RoleModel = sails.models[sails.config.permission.roleModelIdentity],
-        		SettingModel = sails.models[sails.config.humpback.settingModelIdentity];
-
+       			RoleModel = sails.models[sails.config.permission.roleModelIdentity];
+        		
         //bind custom errors logic
         if (!UserModel) {
           err = new Error();
           err.code = 'E_HOOK_INITIALIZE';
           err.name = 'Humpback Hook Error';
-          err.message = 'Could not load the humpback hook because `sails.config.passport.userModelIdentity` refers to an unknown model: "'+sails.config.passport.userModelIdentity+'".';
-          if (sails.config.passport.userModelIdentity === 'user') {
+          err.message = 'Could not load the humpback hook because `sails.config.humpback.userModelIdentity` refers to an unknown model: "'+sails.config.humpback.userModelIdentity+'".';
+          if (sails.config.humpback.userModelIdentity === 'user') {
             err.message += '\nThis option defaults to `user` if unspecified or invalid- maybe you need to set or correct it?';
           }
           return next(err);
@@ -458,6 +455,7 @@ module.exports = function (sails) {
 				  var provider = req.param('provider', 'local');
 				  var action = req.param('action');
 
+				  //console.log(this.protocols);
 				  // Passport.js wasn't really built for local user registration, but it's nice
 				  // having it tied into everything else.
 				  if (provider === 'local' && action !== undefined) {
@@ -511,7 +509,9 @@ module.exports = function (sails) {
 				  var self = this;
 				  var strategies = sails.config.passport;
 
-				  Object.keys(strategies).forEach(function (key) {
+				  _.each(strategies, function(strategem, key){
+				 // Object.keys(strategies).forEach(function (key) {
+				   	console.log(key);
 				    var options = { passReqToCallback: true };
 				    var Strategy;
 
@@ -601,6 +601,8 @@ module.exports = function (sails) {
           });
         });
 
+        // Load passport strategies
+				sails.passport.loadStrategies();
 
 
         // It's very important to trigger this callback method when you are finished
