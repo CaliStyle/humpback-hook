@@ -2,32 +2,28 @@
 
 var sails = require('sails');
 
-describe('Basic tests ::', function() {
+var ConfigOverrides = require('../config/env/testing');
+
+describe('Bootstrap tests ::', function() {
 
     // Before running any tests, attempt to lift Sails
     before(function (done) {
 
-      // Hook will timeout in 10 seconds
+      // Hook will timeout in 11 seconds
       this.timeout(11000);
 
       // Attempt to lift sails
-      sails.lift({
-          hooks: {
-           // Load the hook
-           'humpback-hook': require('../'),
-           // Skip grunt (unless your hook uses it)
-           'grunt': false
-          },
-          models: {
-              migrate: 'drop'
-          },
-         log: {level: 'error'}
-      },function (err, sails) {
+      sails.lift( ConfigOverrides, function (err, sails) {
           if (err) {
               return done(err);
-          } else {
-              done(null, sails);
           }
+
+          //var Client = require('../assets/js/dependencies/sails.io.js');
+          //global.io = new Client(require('socket.io-client'));
+          //io.sails.url = 'http://localhost:1337/';
+          
+          done(null, sails);
+           
       });
     });
 

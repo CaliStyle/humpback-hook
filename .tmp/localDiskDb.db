@@ -1,9 +1,34 @@
 {
   "data": {
+    "model": [],
     "passport": [],
-    "user": []
+    "permission": [],
+    "role": [],
+    "setting": [],
+    "user": [],
+    "role_users__user_roles": []
   },
   "schema": {
+    "model": {
+      "name": {
+        "type": "string",
+        "notNull": true,
+        "unique": true
+      },
+      "identity": {
+        "type": "string",
+        "notNull": true
+      },
+      "attributes": {
+        "type": "json"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      }
+    },
     "passport": {
       "protocol": {
         "type": "string"
@@ -39,17 +64,71 @@
         "type": "datetime"
       }
     },
-    "user": {
-      "username": {
-        "type": "string",
-        "unique": true,
-        "index": true,
-        "notNull": true
+    "permission": {
+      "model": {
+        "type": "integer",
+        "model": "model",
+        "foreignKey": true,
+        "alias": "model"
       },
-      "email": {
+      "object": {
+        "type": "integer",
+        "defaultsTo": -1,
+        "index": true
+      },
+      "attribute": {
+        "type": "string",
+        "defaultsTo": null,
+        "index": true
+      },
+      "action": {
+        "type": "string",
+        "index": true,
+        "notNull": true,
+        "enum": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      },
+      "relation": {
+        "type": "string",
+        "enum": [
+          "role",
+          "owner"
+        ],
+        "defaultsTo": "role",
+        "index": true
+      },
+      "role": {
+        "type": "integer",
+        "model": "role",
+        "foreignKey": true,
+        "alias": "role"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "role": {
+      "name": {
         "type": "string",
         "notNull": true,
-        "unique": true,
+        "unique": true
+      },
+      "active": {
+        "type": "boolean",
+        "defaultsTo": true,
         "index": true
       },
       "id": {
@@ -64,10 +143,79 @@
       "updatedAt": {
         "type": "datetime"
       }
+    },
+    "setting": {
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "user": {
+      "username": {
+        "type": "string",
+        "unique": true
+      },
+      "email": {
+        "type": "string",
+        "unique": true
+      },
+      "firstName": {
+        "type": "string"
+      },
+      "lastName": {
+        "type": "string"
+      },
+      "id": {
+        "type": "integer",
+        "autoIncrement": true,
+        "primaryKey": true,
+        "unique": true
+      },
+      "createdAt": {
+        "type": "datetime"
+      },
+      "updatedAt": {
+        "type": "datetime"
+      }
+    },
+    "role_users__user_roles": {
+      "id": {
+        "primaryKey": true,
+        "unique": true,
+        "autoIncrement": true,
+        "type": "integer"
+      },
+      "role_users": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "role",
+        "on": "id",
+        "via": "user_roles"
+      },
+      "user_roles": {
+        "type": "integer",
+        "foreignKey": true,
+        "references": "user",
+        "on": "id",
+        "via": "role_users"
+      }
     }
   },
   "counters": {
     "passport": {},
-    "user": {}
+    "user": {},
+    "model": {},
+    "permission": {},
+    "role": {},
+    "role_users__user_roles": {},
+    "setting": {}
   }
 }

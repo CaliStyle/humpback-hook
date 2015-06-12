@@ -47,13 +47,19 @@ var Passport = {
     // strategy, the protocol will be set to 'local'. When using a third-party
     // strategy, the protocol will be set to the standard used by the third-
     // party service (e.g. 'oauth', 'oauth2', 'openid').
-    protocol: { type: 'alphanumeric', required: true },
+    protocol: { 
+      type: 'alphanumeric', 
+      required: true 
+    },
 
     // Local field: Password
     //
     // When the local strategy is employed, a password will be used as the
     // means of authentication along with either a username or an email.
-    password: { type: 'string', minLength: 8 },
+    password: { 
+      type: 'string', 
+      minLength: 8 
+    },
 
     // Provider fields: Provider, identifer and tokens
     //
@@ -66,9 +72,15 @@ var Passport = {
     // dards. When using OAuth 1.0, a `token` as well as a `tokenSecret` will
     // be issued by the provider. In the case of OAuth 2.0, an `accessToken`
     // and a `refreshToken` will be issued.
-    provider   : { type: 'alphanumericdashed' },
-    identifier : { type: 'string' },
-    tokens     : { type: 'json' },
+    provider: { 
+      type: 'alphanumericdashed' 
+    },
+    identifier: { 
+      type: 'string' 
+    },
+    tokens: { 
+      type: 'json' 
+    },
 
     // Associations
     //
@@ -77,7 +89,10 @@ var Passport = {
     //
     // For more information on associations in Waterline, check out:
     // https://github.com/balderdashy/waterline
-    user: { model: 'User', required: true },
+    user: { 
+      model: 'User', 
+      required: true 
+    },
 
     /**
      * Validate password used by the local strategy.
