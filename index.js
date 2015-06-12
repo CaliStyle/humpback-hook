@@ -510,8 +510,7 @@ module.exports = function (sails) {
 				  var strategies = sails.config.passport;
 
 				  _.each(strategies, function(strategem, key){
-				 // Object.keys(strategies).forEach(function (key) {
-				   	console.log(key);
+				  	
 				    var options = { passReqToCallback: true };
 				    var Strategy;
 

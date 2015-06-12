@@ -1,10 +1,8 @@
 'use strict';
 
-//var assert = require('assert');
+var assert = require('assert');
 var request = require('supertest');
 //var _ = require('lodash');
-
-//var io = io;
 
 describe('User Controller ::', function () {
 
@@ -59,36 +57,34 @@ describe('User Controller ::', function () {
     });
 
   });
+    
+  describe('socket request', function () {
 
-});
-    /*
-    describe('socket request', function () {
+    it('should be able to create new user', function (done) {
 
-      it('should be able to create new user', function (done) {
+      io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin123' }, function (data, jwres) {
 
-        io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin1234' }, function (data, jwres) {
-
-          assert.equal(jwres.statusCode, 200);
-          done();
-
-        });
-
-      });
-
-      it('should return error if user already exists', function (done) {
-
-        io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin1234' }, function (data, jwres) {
-
-          assert.equal(jwres.statusCode, 500);
-          done();
-
-        });
+        assert.equal(jwres.statusCode, 200);
+        done();
 
       });
 
     });
-    */
-  //});
+
+    it('should return error if user already exists', function (done) {
+
+      io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin123' }, function (data, jwres) {
+
+        assert.equal(jwres.statusCode, 500);
+        done();
+
+      });
+
+    });
+
+  });
+  
+});
 /*
   describe('#findOne()', function () {
 
@@ -104,7 +100,7 @@ describe('User Controller ::', function () {
             .post('/auth/local')
             .send({
               identifier: 'existing.user@email.com',
-              password: 'admin1234'
+              password: 'admin123'
             })
             .expect(200, function (err, res) {
 

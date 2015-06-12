@@ -18,14 +18,15 @@ var ConfigOverrides = require('../config/env/testing');
               return done(err);
           }
 
-          //var Client = require('../assets/js/dependencies/sails.io.js');
-          //global.io = new Client(require('socket.io-client'));
-          //io.sails.url = 'http://localhost:1337/';
+          var Client = require('../assets/js/dependencies/sails.io.js');
+          global.io = new Client(require('socket.io-client'));
+          io.sails.url = 'http://localhost:1337/';
+          
           request(sails.hooks.http.app)
           .post('/register')
           .send({
             email: 'existing.user@email.com',
-            password: 'admin1234'
+            password: 'admin123'
           })
           .end(function(err) {
             done(err, sails);
