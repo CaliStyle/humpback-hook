@@ -19,6 +19,7 @@
     "ignore": true,
     "globals": {
         "sails": true,
-        "io": true
+        "io": true,
+        "_": true
     }
 }

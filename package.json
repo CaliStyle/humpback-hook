@@ -27,11 +27,13 @@
   "homepage": "https://github.com/CaliStyle/humpback-hook",
   "dependencies": {
     "bcryptjs": "^2.1",
+    "bluebird": "^2.9.30",
+    "congruence": "^1.6.11",
     "passport": "^0.2.1",
-    "passport-http": "^0.2.2",
-    "passport-local": "^1.0.0",
     "passport-facebook": "^1.0.3",
     "passport-google": "^0.3.0",
+    "passport-http": "^0.2.2",
+    "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.2"
   },
   "devDependencies": {

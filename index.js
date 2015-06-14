@@ -117,16 +117,97 @@ function _extendReq(req) {
   return req;
 }
 
+/**
+ * Initiate Model Ownership
+ */
+
+function _installModelOwnership (models) {
+  _.each(models, function (model) {
+    if (model.autoCreatedBy === false){
+    	return;
+    }
+
+    _.defaults(model.attributes, {
+      createdBy: {
+        model: 'User',
+        index: true,
+        notNull: true
+      },
+      owner: {
+        model: 'User',
+        index: true
+      }
+    });
+  });
+}
+
+/**
+ * Install the application. Sets up default Roles, Users, Models, and
+ * Permissions, and creates an admin user.
+ */
+function _initializeFixtures () {
+  return require('./lib/permissions/model').createModels()
+    .bind({ })
+    .then(function (models) {
+      
+    	if(models.length === 0){
+    		var err = new Error();
+		    err.code = 'E_HOOK_INITIALIZE';
+		    err.name = 'Humpback Hook Error';
+		    err.message = 'humpback-hook: failed to create models';
+		    return err;
+    	}
+
+      this.models = models;
+      return require('./lib/permissions/role').create();
+    })
+    .then(function (roles) {
+      this.roles = roles;
+      var userModel = _.find(this.models, { name: 'User' });
+      return require('./lib/permissions/user').create(this.roles, userModel);
+    })
+    .then(function () {
+    	var User = sails.models[sails.config.humpback.userModelIdentity];
+      return User.findOne({ username: sails.config.humpback.adminUsername });
+    })
+    .then(function (user) {
+    	if(!user){
+    		var err = new Error();
+		    err.code = 'E_HOOK_INITIALIZE';
+		    err.name = 'Humpback Hook Error';
+		    err.message = 'humpback-hook: failed to create admin';
+		    return err;
+    	}
+      
+      sails.log('humpback-hook: admin user:', user);
+      user.createdBy = user.id;
+      user.owner = user.id;
+      return user.save();
+    })
+    .then(function (admin) {
+      return require('./lib/permissions/permission').create(this.roles, this.models, admin);
+    })
+    .then(function (permissions) {
+      return permissions;
+      //return null;
+    })
+    .catch(function (error) {
+      sails.log.error(error);
+    });
+}
+
 module.exports = function (sails) {
  	return { 
  		defaults: {
       humpback: {
-      	// Default to look for a model w/ identity
+      	// Defaults to look for a model w/ identity
       	userModelIdentity: 'user',
-      	settingModelIdentity: 'setting'
+      	settingModelIdentity: 'setting',
+      	adminUsername: process.env.ADMIN_USERNAME || 'admin',
+				adminPassword: process.env.ADMIN_PASSWORD || 'admin123'
       },
       permission: {
-      	// Default to look for a model w/ identity
+      	// Defaults to look for a model w/ identity
       	passportModelIdentity: 'passport',
         modelModelIdentity: 'model',
         permissionModelIdentity: 'permission',
@@ -138,6 +219,10 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
+
+      global.Promise = require('bluebird');
+      global._ = require('lodash');
+      _.mixin(require('congruence'));
      
     },
 		initialize: function (next) {
@@ -510,7 +595,7 @@ module.exports = function (sails) {
 				  var strategies = sails.config.passport;
 
 				  _.each(strategies, function(strategem, key){
-				  	
+
 				    var options = { passReqToCallback: true };
 				    var Strategy;
 
@@ -604,43 +689,71 @@ module.exports = function (sails) {
 				sails.passport.loadStrategies();
 
 
-        // It's very important to trigger this callback method when you are finished
-        // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-        next();
+				/**
+				 * - Install Ownership Rights
+				 * - Create Admin if nessecary	
+				 */
+
+				// Install Model Ownership rights
+				_installModelOwnership(sails.models);
+
+				Promise.bind({}, ModelModel.count()
+          .then(function (count) {
+            if (count === sails.models.length){ 
+            	return;
+            }
+
+            return _initializeFixtures();
+          })
+          .then(function (initializedFixtures){
+          	sails.log(initializedFixtures);
+
+          	// It's very important to trigger this callback method when you are finished
+        		// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
+        		next();
+          })
+          .catch(function (error) {
+            sails.log.error(error);
+            next(error);
+          })
+        );
 
       });
+
 		},
 
 		//intercent all request and bundle passport onto it
     routes: {
-      before: {
-        'all /*': function grab(req, res, next) {
-     			req = _extendReq(req);
-          sails.passport.initialize()(req,res,function(err){
-            if (err) {
-            	return res.negotiate(err);
-            }
+      before: 
+      	{
+	        'all /*': function grab(req, res, next) {
+	     			req = _extendReq(req);
+	          sails.passport.initialize()(req,res,function(err){
+	            if (err) {
+	            	return res.negotiate(err);
+	            }
 
-            sails.passport.session()(req,res, function (err){
-              if (err){
-              	return res.negotiate(err);
-              }
-              /*
-              // Make the request's passport methods available for socket
-				      if (req.isSocket) {
-				        for (var i = 0; i < sails.config.passport.methods.length; i++) {
-				          req[sails.config.passport.methods[i]] = http.IncomingMessage.prototype[sails.config.passport.methods[i]].bind(req);
-				        }
-				      }
-				      // Make the user available throughout the frontend
-				      res.locals.user = req.user;
-							*/
-              //continue
-              next();
-            });
-          });
-        }
-      }
+	            sails.passport.session()(req,res, function (err){
+	              if (err){
+	              	return res.negotiate(err);
+	              }
+	              /*
+	              // Make the request's passport methods available for socket
+					      if (req.isSocket) {
+					        for (var i = 0; i < sails.config.passport.methods.length; i++) {
+					          req[sails.config.passport.methods[i]] = http.IncomingMessage.prototype[sails.config.passport.methods[i]].bind(req);
+					        }
+					      }
+					      // Make the user available throughout the frontend
+					      res.locals.user = req.user;
+								*/
+	              //continue
+	              next();
+	            });
+	          });
+	        }
+	      }
+      
     }
 	};
 };
