@@ -8,16 +8,30 @@
 
 
 module.exports = {
+  
   autoCreatedBy: false,
 
-  description: 'Confers `Permission` to `User`',
+  description: 'Confers "Permission" to "User"',
   
-  private: false,
+  permissions: {
+    'registered': {
+			'create': {action: false,	relation: false},
+			'read' 	: {action: false,	relation: false},
+			'update': {action: false,	relation: false},
+			'delete': {action: false,	relation: false}		
+		},
+		'public': {
+			'create': {action: false,	relation: false},
+			'read' 	: {action: false,	relation: false},
+			'update': {action: false,	relation: false},
+			'delete': {action: false,	relation: false}
+		}
+  },
 
   attributes: {
     name: {
       type: 'string',
-      //index: true,
+      //index: true, //Water line can index strings
       notNull: true,
       unique: true
     },

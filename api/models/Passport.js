@@ -49,6 +49,22 @@ function hashPassword (passport, next) {
  * the user, but not the authentication data, to and from the session.
  */
 var Passport = {
+
+  permissions: {
+    'registered': {
+      'create': {action: false, relation: false},
+      'read'  : {action: false, relation: false},
+      'update': {action: false, relation: false},
+      'delete': {action: false, relation: false}    
+    },
+    'public': {
+      'create': {action: false, relation: false},
+      'read'  : {action: false, relation: false},
+      'update': {action: false, relation: false},
+      'delete': {action: false, relation: false}
+    }
+  },
+
   attributes: {
     // Required field: Protocol
     //

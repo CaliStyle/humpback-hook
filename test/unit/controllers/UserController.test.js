@@ -84,8 +84,6 @@ describe('User Controller ::', function () {
 
   });
   
-});
-/*
   describe('#findOne()', function () {
 
     describe('http request', function () {
@@ -120,6 +118,7 @@ describe('User Controller ::', function () {
 
       });
 
+      /*
       it('should not find user if they have logged out', function (done) {
 
         var agent = request.agent(sails.hooks.http.app);
@@ -141,6 +140,7 @@ describe('User Controller ::', function () {
             });
 
       });
+      */
 
     });
 
@@ -150,7 +150,7 @@ describe('User Controller ::', function () {
 
       it('should find user if they have been authenticated', function (done) {
 
-        io.socket.post('/auth/local', { identifier: 'existing.user@email.com', password: 'admin1234' }, function (data, jwres) {
+        io.socket.post('/auth/local', { identifier: 'existing.user@email.com', password: 'admin123' }, function (data, jwres) {
 
           assert.equal(jwres.statusCode, 200);
 
@@ -168,6 +168,7 @@ describe('User Controller ::', function () {
 
       });
 
+      /*
       it('should not find user if they have logged out', function (done) {
 
         io.socket.get('/logout', function (data, jwres) {
@@ -185,10 +186,10 @@ describe('User Controller ::', function () {
         });
 
       });
+      */
 
     });
 
   });
 
 });
-*/

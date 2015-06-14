@@ -20,6 +20,24 @@ String.prototype.replaceArray = function(find, replace, ignore) {
 
 
 module.exports = {
+
+  description: 'Represents a User.',
+
+  permissions: {
+    'registered': {
+      'create': {action: false, relation: false},
+      'read'  : {action: true,  relation: false},
+      'update': {action: false, relation: 'owner'},
+      'delete': {action: false, relation: false}    
+    },
+    'public': {
+      'create': {action: false, relation: false},
+      'read'  : {action: false, relation: false},
+      'update': {action: false, relation: false},
+      'delete': {action: false, relation: false}
+    }
+  },
+
   attributes: {
     username: {
       type: 'string',

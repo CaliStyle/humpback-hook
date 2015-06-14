@@ -13,6 +13,8 @@ module.exports = {
   
   autoCreatedAt: false,
   
+  description: 'Represents a Security Log Entry.',
+
   private: true,
 
   attributes: {

@@ -13,6 +13,8 @@ module.exports = {
   
   autoUpdatedAt: false,
   
+  description: 'Represents a Request Entry.',
+
   private: true,
 
   attributes: {
