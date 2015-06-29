@@ -1,12 +1,12 @@
 'use strict';
 
 //dependencies
-//var path = require('path');
 //var libPath = path.join(__dirname, 'lib');
 var _ = require('lodash');
 var Passport = require('passport').constructor;
 var path = require('path');
 var url = require('url');
+var fnv = require('fnv-plus');
 
 /**
  * Normally these methods are added to the global HTTP IncomingMessage
@@ -114,11 +114,29 @@ function _extendReq(req) {
     return !req.isAuthenticated();
   };
 
+  /**
+   * Get the IP address
+   *
+   * @return IP address
+   * @api public
+   */
+  var ipAddress = req.headers['x-forwarded-for'] || (req.connection && req.connection.remoteAddress);
+  req.ipAddress = ipAddress;
+
+  /**
+   * Hashed unique id
+   *
+   * @return Hash
+   * @api public
+   */
+  req.requestId = fnv.hash(new Date().valueOf() + ipAddress, 128).str();
+
   return req;
 }
 
 /**
  * Initiate Model Ownership
+ * private
  */
 
 function _installModelOwnership (models) {
@@ -144,6 +162,7 @@ function _installModelOwnership (models) {
 /**
  * Install the application. Sets up default Roles, Users, Models, and
  * Permissions, and creates an admin user.
+ * private
  */
 function _initializeFixtures () {
   return require('./lib/permissions/model').createModels()
@@ -179,21 +198,39 @@ function _initializeFixtures () {
 		    return err;
     	}
       
-      sails.log('humpback-hook: admin user:', user);
       user.createdBy = user.id;
       user.owner = user.id;
       return user.save();
     })
     .then(function (admin) {
+      sails.log('humpback-hook: admin user:', admin);
+
       return require('./lib/permissions/permission').create(this.roles, this.models, admin);
     })
     .then(function (permissions) {
       return permissions;
       //return null;
     })
-    .catch(function (error) {
-      sails.log.error(error);
+    .catch(function (err) {
+      sails.log.error(err);
     });
+}
+
+/**
+ * Santizes the request url for logging in
+ * the request log
+ * private
+ */
+
+function _sanitizeRequestUrl (req) {
+  var requestUrl = url.format({
+    protocol: req.protocol,
+    host: sails.getHost(),
+    pathname: req.originalUrl || req.url,
+    query: req.query
+  });
+
+  return requestUrl.replace(/(password=).*?(&|$)/ig, '$1<hidden>$2');
 }
 
 module.exports = function (sails) {
@@ -211,7 +248,8 @@ module.exports = function (sails) {
       	passportModelIdentity: 'passport',
         modelModelIdentity: 'model',
         permissionModelIdentity: 'permission',
-        roleModelIdentity: 'role'
+        roleModelIdentity: 'role',
+        requestlogModelIdentity: 'requestlog'
       }
     },
 		configure: function () {
@@ -219,7 +257,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
-
+      //create globals
       global.Promise = require('bluebird');
       global._ = require('lodash');
       _.mixin(require('congruence'));
@@ -266,7 +304,8 @@ module.exports = function (sails) {
        			PassportModel = sails.models[sails.config.permission.passportModelIdentity],
        			ModelModel = sails.models[sails.config.permission.modelModelIdentity],
        			PermissionModel = sails.models[sails.config.permission.permissionModelIdentity],
-       			RoleModel = sails.models[sails.config.permission.roleModelIdentity];
+       			RoleModel = sails.models[sails.config.permission.roleModelIdentity],
+            RequestLogModel = sails.models[sails.config.permission.requestlogModelIdentity];
         		
         //bind custom errors logic
         if (!UserModel) {
@@ -331,6 +370,17 @@ module.exports = function (sails) {
           err.message = 'Could not load the humpback hook because `sails.config.humpback.settingModelIdentity` refers to an unknown model: "'+sails.config.humpback.settingModelIdentity+'".';
           if (sails.config.humpback.settingModelIdentity === 'setting') {
             err.message += '\nThis option defaults to `setting` if unspecified or invalid- maybe you need to set or correct it?';
+          }
+          return next(err);
+        }
+
+        if (!RequestLogModel) {
+          err = new Error();
+          err.code = 'E_HOOK_INITIALIZE';
+          err.name = 'Humpback Hook Error';
+          err.message = 'Could not load the humpback hook because `sails.config.humpback.requestlogModelIdentity` refers to an unknown model: "'+sails.config.humpback.requestlogModelIdentity+'".';
+          if (sails.config.humpback.requestlogModelIdentity === 'requestlog') {
+            err.message += '\nThis option defaults to `requestlog` if unspecified or invalid- maybe you need to set or correct it?';
           }
           return next(err);
         }
@@ -645,6 +695,9 @@ module.exports = function (sails) {
 				  });
 				};
 
+        // Load passport strategies
+        sails.passport.loadStrategies();
+
 				/**
 				 * Disconnect a passport from a user
 				 *
@@ -685,8 +738,7 @@ module.exports = function (sails) {
           });
         });
 
-        // Load passport strategies
-				sails.passport.loadStrategies();
+        
 
 
 				/**
@@ -706,7 +758,7 @@ module.exports = function (sails) {
             return _initializeFixtures();
           })
           .then(function (initializedFixtures){
-          	sails.log(initializedFixtures);
+          	sails.log('humpback-hook: fixtures initialized', typeof initializedFixtures);
 
           	// It's very important to trigger this callback method when you are finished
         		// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
@@ -722,38 +774,42 @@ module.exports = function (sails) {
 
 		},
 
-		//intercent all request and bundle passport onto it
+		//intercent all request and bundle passport/audit onto it
     routes: {
-      before: 
-      	{
-	        'all /*': function grab(req, res, next) {
-	     			req = _extendReq(req);
-	          sails.passport.initialize()(req,res,function(err){
-	            if (err) {
-	            	return res.negotiate(err);
-	            }
+      before: {
+        'all /*': function grab(req, res, next) {
+     			
+          //Extend the request with additional passport options and Request Entries
+          req = _extendReq(req);
 
-	            sails.passport.session()(req,res, function (err){
-	              if (err){
-	              	return res.negotiate(err);
-	              }
-	              /*
-	              // Make the request's passport methods available for socket
-					      if (req.isSocket) {
-					        for (var i = 0; i < sails.config.passport.methods.length; i++) {
-					          req[sails.config.passport.methods[i]] = http.IncomingMessage.prototype[sails.config.passport.methods[i]].bind(req);
-					        }
-					      }
-					      // Make the user available throughout the frontend
-					      res.locals.user = req.user;
-								*/
-	              //continue
-	              next();
-	            });
-	          });
-	        }
-	      }
-      
+          // initialize passport on all routes for passport sockets
+          sails.passport.initialize()(req,res,function(err){
+            if (err) {
+            	return res.negotiate(err);
+            }
+
+            sails.passport.session()(req,res, function (err){
+              if (err) {
+              	return res.negotiate(err);
+              }
+
+              // Audit Like Policy
+              // persist RequestLog entry in the background and continue immediately
+              sails.models.requestlog.create({
+                id: req.requestId,
+                ipAddress: req.ipAddress,
+                url: _sanitizeRequestUrl(req),
+                method: req.method,
+                body: _.omit(req.body, 'password'),
+                model: req.options.modelIdentity,
+                user: req.isAuthenticated && req.user ? req.user.id : null
+              }).exec(_.identity);
+
+              next();
+            });
+          });
+        }
+      }
     }
 	};
 };

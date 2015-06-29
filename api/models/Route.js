@@ -27,7 +27,7 @@ module.exports = {
   	},
 
 	attributes: {
-  		url: {
+  		route: {
   			type: 'string',
   			required: true
   		},

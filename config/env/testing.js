@@ -27,7 +27,7 @@ module.exports = {
   },
 
   log: {
-    level: 'error'
+    //level: 'error'
   },
   
   policies: {
