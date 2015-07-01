@@ -204,12 +204,16 @@ function _initializeFixtures () {
     })
     .then(function (admin) {
       sails.log('humpback-hook: admin user:', admin);
-
+      this.admin = admin;
       return require('./lib/permissions/permission').create(this.roles, this.models, admin);
     })
     .then(function (permissions) {
-      return permissions;
-      //return null;
+      this.permissions = permissions;
+      return require('./lib/permissions/route').create(this.roles, this.models, this.admin);
+    })
+    .then(function (routes){
+      //sails.log('humpback-hook: route permissions created');
+      return routes;
     })
     .catch(function (err) {
       sails.log.error(err);
@@ -249,7 +253,8 @@ module.exports = function (sails) {
         modelModelIdentity: 'model',
         permissionModelIdentity: 'permission',
         roleModelIdentity: 'role',
-        requestlogModelIdentity: 'requestlog'
+        requestlogModelIdentity: 'requestlog',
+        routeModelIdentity: 'route'
       }
     },
 		configure: function () {
@@ -305,7 +310,8 @@ module.exports = function (sails) {
        			ModelModel = sails.models[sails.config.permission.modelModelIdentity],
        			PermissionModel = sails.models[sails.config.permission.permissionModelIdentity],
        			RoleModel = sails.models[sails.config.permission.roleModelIdentity],
-            RequestLogModel = sails.models[sails.config.permission.requestlogModelIdentity];
+            RequestLogModel = sails.models[sails.config.permission.requestlogModelIdentity],
+            RouteModel = sails.models[sails.config.permission.routeModelIdentity];
         		
         //bind custom errors logic
         if (!UserModel) {
@@ -381,6 +387,17 @@ module.exports = function (sails) {
           err.message = 'Could not load the humpback hook because `sails.config.humpback.requestlogModelIdentity` refers to an unknown model: "'+sails.config.humpback.requestlogModelIdentity+'".';
           if (sails.config.humpback.requestlogModelIdentity === 'requestlog') {
             err.message += '\nThis option defaults to `requestlog` if unspecified or invalid- maybe you need to set or correct it?';
+          }
+          return next(err);
+        }
+
+        if (!RouteModel) {
+          err = new Error();
+          err.code = 'E_HOOK_INITIALIZE';
+          err.name = 'Humpback Hook Error';
+          err.message = 'Could not load the humpback hook because `sails.config.humpback.routeModelIdentity` refers to an unknown model: "'+sails.config.humpback.routeModelIdentity+'".';
+          if (sails.config.humpback.routeModelIdentity === 'route') {
+            err.message += '\nThis option defaults to `route` if unspecified or invalid- maybe you need to set or correct it?';
           }
           return next(err);
         }
@@ -795,7 +812,7 @@ module.exports = function (sails) {
 
               // Audit Like Policy
               // persist RequestLog entry in the background and continue immediately
-              sails.models.requestlog.create({
+              sails.models[sails.config.permission.requestlogModelIdentity].create({
                 id: req.requestId,
                 ipAddress: req.ipAddress,
                 url: _sanitizeRequestUrl(req),
