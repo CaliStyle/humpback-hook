@@ -1,7 +1,6 @@
 'use strict';
 
 //dependencies
-//var libPath = path.join(__dirname, 'lib');
 var _ = require('lodash');
 var Passport = require('passport').constructor;
 var path = require('path');
