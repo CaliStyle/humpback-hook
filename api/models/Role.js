@@ -11,10 +11,10 @@ module.exports = {
   
   autoCreatedBy: false,
 
-  description: 'Confers "Permission" to "User"',
+    description: 'Confers "Permission" to "User"',
   
-  permissions: {
-    'registered': {
+    permissions: {
+        'registered': {
 			'create': {action: false,	relation: false},
 			'read' 	: {action: false,	relation: false},
 			'update': {action: false,	relation: false},
@@ -26,35 +26,35 @@ module.exports = {
 			'update': {action: false,	relation: false},
 			'delete': {action: false,	relation: false}
 		}
-  },
+    },
 
-  attributes: {
-    name: {
-      type: 'string',
-      //index: true, //Water line can index strings
-      notNull: true,
-      unique: true
-    },
-    users: {
-      collection: 'User',
-      via: 'roles'
-    },
-    routes: {
-      collection: 'Route',
-      via: 'roles'
-    },
-    alerts: {
-      collection: 'Alert',
-      via: 'roles'
-    },
-    active: {
-      type: 'boolean',
-      defaultsTo: true,
-      index: true
-    },
-    permissions: {
-      collection: 'Permission',
-      via: 'role'
+    attributes: {
+        name: {
+            type: 'string',
+            //index: true, //Water line can index strings
+            notNull: true,
+            unique: true
+        },
+        users: {
+            collection: 'User',
+            via: 'roles'
+        },
+        routes: {
+            collection: 'Route',
+            via: 'roles'
+        },
+        alerts: {
+            collection: 'Alert',
+            via: 'roles'
+        },
+        active: {
+            type: 'boolean',
+            defaultsTo: true,
+            index: true
+        },
+        permissions: {
+            collection: 'Permission',
+            via: 'role'
+        }
     }
-  }
 }

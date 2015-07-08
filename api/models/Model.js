@@ -7,47 +7,47 @@
 */
 
 module.exports = {
-  description: 'Represents a Waterline collection that a User can preform CRUD, query, etc.',
+    description: 'Represents a Waterline collection that a User can preform CRUD, query, etc.',
 
-  autoPK: true,
+    autoPK: true,
   
-  autoCreatedBy: false,
+    autoCreatedBy: false,
   
-  autoCreatedAt: false,
+    autoCreatedAt: false,
   
-  autoUpdatedAt: false,
-
-  permissions: {
-    'registered': {
-      'create': {action: false, relation: false},
-      'read'  : {action: true,  relation: false},
-      'update': {action: false, relation: false},
-      'delete': {action: false, relation: false}    
-    },
-    'public': {
-      'create': {action: false, relation: false},
-      'read'  : {action: true,  relation: false},
-      'update': {action: false, relation: false},
-      'delete': {action: false, relation: false}
-    }
-  },
-
-  attributes: {
-    name: {
-      type: 'string',
-      notNull: true,
-      unique: true
-    },
-    identity: {
-      type: 'string',
-      notNull: true
-    },
-    attributes: {
-      type: 'json'
-    },
+    autoUpdatedAt: false,
+    
     permissions: {
-      collection: 'Permission',
-      via: 'model'
+        'registered': {
+            'create': {action: false, relation: false},
+            'read'  : {action: true,  relation: false},
+            'update': {action: false, relation: false},
+            'delete': {action: false, relation: false}    
+        },
+        'public': {
+            'create': {action: false, relation: false},
+            'read'  : {action: true,  relation: false},
+            'update': {action: false, relation: false},
+            'delete': {action: false, relation: false}
+        }
+    },
+
+    attributes: {
+        name: {
+            type: 'string',
+            notNull: true,
+            unique: true
+        },
+        identity: {
+            type: 'string',
+            notNull: true
+        },
+        attributes: {
+            type: 'json'
+        },
+        permissions: {
+            collection: 'Permission',
+            via: 'model'
+        }
     }
-  }
 };

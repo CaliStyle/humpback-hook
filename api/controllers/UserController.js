@@ -6,11 +6,13 @@
  */
 
 module.exports = {
-  create: function (req, res) {
-    sails.passport.protocols.local.register(req.body, function (err, user) {
-      if (err) return res.serverError(err);
+ 	create: function (req, res) {
+		sails.passport.protocols.local.register(req.body, function (err, user) {
+    		if (err) {
+    			return res.serverError(err);
+    		}
 
-      res.ok(user);
-    });
-  }
+    		res.ok(user);
+		});
+	}
 };

@@ -7,20 +7,20 @@
 */
 
 module.exports = {
-  autoPK: false,
+    autoPK: false,
   
-  autoUpdatedAt: false,
+    autoUpdatedAt: false,
   
-  autoCreatedAt: false,
+    autoCreatedAt: false,
   
-  description: 'Represents a Security Log Entry.',
+    description: 'Represents a Security Log Entry.',
 
-  private: true,
+    private: true,
 
-  attributes: {
-    request: {
-      model: 'RequestLog',
-      primaryKey: true
+    attributes: {
+        request: {
+            model: 'RequestLog',
+            primaryKey: true    
+        }
     }
-  }
 };
