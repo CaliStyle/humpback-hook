@@ -6,6 +6,8 @@ var Passport = require('passport').constructor;
 var path = require('path');
 var url = require('url');
 var fnv = require('fnv-plus');
+//var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+//var wlFilter = require('waterline-criteria');
 
 /**
  * Normally these methods are added to the global HTTP IncomingMessage
@@ -38,21 +40,23 @@ function _extendReq(req) {
    * @api public
    */
   req.login = req.logIn = function(user, options, done) {
+    var property, session;
+    
     if (typeof options === 'function') {
       done = options;
       options = {};
     }
     options = options || {};
 
-    var property = 'user';
+    property = 'user';
     if (req._passport && req._passport.instance) {
       property = req._passport.instance._userProperty || 'user';
     }
-    var session = (options.session === undefined) ? true : options.session;
+    session = (options.session === undefined) ? true : options.session;
 
     req[property] = user;
     if (!session) {
-    	return done&&done();
+    	return done && done();
     }
     if (!req._passport) { 
     	throw new Error('passport.initialize() middleware not in use'); 
@@ -119,7 +123,8 @@ function _extendReq(req) {
    * @return IP address
    * @api public
    */
-  var ipAddress = req.headers['x-forwarded-for'] || (req.connection && req.connection.remoteAddress);
+
+  var ipAddress = req.isSocket ? req.socket.handshake.address : req.headers['x-forwarded-for'] || (req.connection && req.connection.remoteAddress);
   req.ipAddress = ipAddress;
 
   /**
@@ -236,6 +241,71 @@ function _sanitizeRequestUrl (req) {
   return requestUrl.replace(/(password=).*?(&|$)/ig, '$1<hidden>$2');
 }
 
+
+/**
+ * 
+ * 
+ * private
+ */
+/*
+function _responsePolicy (_data, options) {
+  var req = this.req, 
+      res = this.res, 
+      user = req.owner, 
+      method = PermissionService.getMethod(req),
+      data = _.isArray(_data) ? _data : [_data];
+
+  //sails.log('data', _data);
+  //sails.log('options', options);
+
+  // TODO search populated associations
+  Promise.bind(this)
+    .map(data, function (object) {
+      sails.log.silly(object);
+      return user.getOwnershipRelation(data);
+    })
+    .then(function (results) {
+      //sails.log('results', results);
+      var permitted = _.filter(results, function (result) {
+        return _.any(req.permissions, function (permission) {
+          return permission.permits(result.relation, method);
+        });
+      });
+
+      if (permitted.length === 0) {
+        //sails.log('permitted.length === 0');
+        return res.send(404);
+      }
+      else if (_.isArray(_data)) {
+        return res._ok(permitted, options);
+      }
+      else {
+        res._ok(permitted[0], options);
+      }
+    });
+}
+*/
+/**
+ * 
+ * 
+ * private
+ */
+/*
+function _bindResponsePolicy (req, res) {
+  res._ok = res.ok;
+
+  res.ok = _.bind(_responsePolicy, {
+    req: req,
+    res: res
+  });
+}
+*/
+
+/**
+ * 
+ * 
+ */
+
 module.exports = function (sails) {
  	return { 
  		defaults: {
@@ -256,6 +326,9 @@ module.exports = function (sails) {
         routeModelIdentity: 'route'
       }
     },
+    
+    _modelCache: { },
+
 		configure: function () {
       
       if (!_.isObject(sails.config.humpback)){
@@ -265,6 +338,8 @@ module.exports = function (sails) {
       global.Promise = require('bluebird');
       global._ = require('lodash');
       _.mixin(require('congruence'));
+
+      //this.models = models;
      
     },
 		initialize: function (next) {
@@ -441,14 +516,14 @@ module.exports = function (sails) {
 				 * @param {Function} next
 				 */
 				sails.passport.connect = function (req, query, profile, next) {
-				  var user = { };
+				  var user = { }, provider;
 
 				  // Get the authentication provider from the query.
 				  query.provider = req.param('provider');
 
 				  // Use profile.provider or fallback to the query.provider if it is undefined
 				  // as is the case for OpenID, for example
-				  var provider = profile.provider || query.provider;
+				  provider = profile.provider || query.provider;
 
 				  // If the provider cannot be identified we cannot match it to a passport so
 				  // throw an error and let whoever's next in line take care of it.
@@ -473,10 +548,7 @@ module.exports = function (sails) {
 				    return next(new Error('Neither a username nor email was available'));
 				  }
 
-				  //var User = UserModel;
-				  var Passport = PassportModel;
-
-				  Passport.findOne({
+				  PassportModel.findOne({
 				    provider: provider,
 				  	identifier : query.identifier.toString()
 				  }, function (err, passport) {
@@ -505,8 +577,8 @@ module.exports = function (sails) {
 
 				          query.user = user.id;
 
-				          //Passport.create(query, function (err, passport) {
-				          Passport.create(query, function (err) {
+				          //PassportModel.create(query, function (err, passport) {
+				          PassportModel.create(query, function (err) {
 				            // If a passport wasn't created, bail out
 				            if (err) {
 				              return next(err);
@@ -532,7 +604,8 @@ module.exports = function (sails) {
 				          }
 
 				          // Fetch the user associated with the Passport
-				          sails.models.user.findOne(passport.user.id, next);
+				          //sails.models.user.findOne(passport.user.id, next);
+                  UserModel.findOne(passport.user.id, next);
 				        });
 				      }
 				    } else {
@@ -543,7 +616,7 @@ module.exports = function (sails) {
 				        query.user = req.user.id;
 
 				        //Passport.create(query, function (err, passport) {
-				        Passport.create(query, function (err) {
+				        PassportModel.create(query, function (err) {
 				          // If a passport wasn't created, bail out
 				          if (err) {
 				            return next(err);
@@ -710,7 +783,7 @@ module.exports = function (sails) {
 				    }
 				  });
 				};
-
+ 
         // Load passport strategies
         sails.passport.loadStrategies();
 
@@ -790,41 +863,300 @@ module.exports = function (sails) {
 
 		},
 
-		//intercent all request and bundle passport/audit onto it
+    /**
+     * These route bindings act like policy abstractions
+     */
     routes: {
       before: {
-        'all /*': function grab(req, res, next) {
-     			
-          //Extend the request with additional passport options and Request Entries
-          req = _extendReq(req);
+        'all /*': [
+          //intercept all request and bundle passport onto it
+          function passport (req, res, next) {
+       			
+            //Extend the request with additional passport options and Request Entries
+            req = _extendReq(req);
 
-          // initialize passport on all routes for passport sockets
-          sails.passport.initialize()(req,res,function(err){
-            if (err) {
-            	return res.negotiate(err);
-            }
-
-            sails.passport.session()(req,res, function (err){
+            // initialize passport on all routes for passport sockets
+            sails.passport.initialize()(req,res,function(err){
               if (err) {
               	return res.negotiate(err);
               }
 
-              // Audit Like Policy
-              // persist RequestLog entry in the background and continue immediately
-              sails.models[sails.config.permission.requestlogModelIdentity].create({
-                id: req.requestId,
-                ipAddress: req.ipAddress,
-                url: _sanitizeRequestUrl(req),
-                method: req.method,
-                body: _.omit(req.body, 'password'),
-                model: req.options.modelIdentity,
-                user: req.isAuthenticated && req.user ? req.user.id : null
-              }).exec(_.identity);
+              sails.passport.session()(req,res, function (err){
+                if (err) {
+                	return res.negotiate(err);
+                }
+                
+                //Move onto the next policies
+                next();
 
-              next();
+              });
             });
-          });
-        }
+          },
+
+          
+          // Remote Authorization from Header
+          function allowRemoteAuthorization (req, res, next){
+            var auth, authString, username, password;
+            
+            auth = req.headers.authorization;
+            if (!auth || auth.search('Basic ') !== 0) {
+              return next();
+            }
+            if (process.env.NODE_ENV === 'production' && !req.secure) {
+              return res.status(403).json({ error: 'https required for basic auth. refusing login request' });
+            }
+
+            authString = new Buffer(auth.split(' ')[1], 'base64').toString();
+            username = authString.split(':')[0];
+            password = authString.split(':')[1];
+
+            sails.log.silly('authenticating', username, 'using basic auth:', req.url);
+
+            sails.passport.protocols.local.login(req, username, password, function (error, user, passport) {
+              if (error) {
+                return next(error);
+              }
+              if (!user) {
+                req.session.authenticated = false;
+                return res.status(403).json({ error: 'Could not authenticate user '+ username });
+              }
+
+              req.user = user;
+              req.session.authenticated = true;
+              req.session.passport = passport;
+
+              //Move onto the next policies
+              next();
+
+            });
+          },
+          /*
+          // session authorization
+          function sessionAuth(req, res, next){
+            // User is allowed, proceed to the next policy, 
+            // or if this is the last policy, the controller
+            if (req.session.authenticated) {
+              return next();
+            }
+
+            res.status(403).json({ error: 'You are not permitted to perform this action.' });
+
+          },
+          */
+          /*
+          function modelPolicy (req, res, next){
+            
+            var modelCache = sails._modelCache;
+            req.options.modelIdentity = actionUtil.parseModel(req).identity;
+
+            if (_.isEmpty(req.options.modelIdentity)) {
+              return next();
+            }
+
+            req.options.modelDefinition = sails.models[req.options.modelIdentity];
+            req.model = modelCache[req.options.modelIdentity];
+
+            if (_.isObject(req.model) && !_.isEmpty(req.model.id)) {
+              return next();
+            }
+
+            sails.log.warn('Model [', req.options.modelIdentity, '] not found in model cache');
+
+            // if the model is not found in the cache for some reason, get it from the database
+            sails.models[sails.config.permission.modelModelIdentity]
+            .findOne({ identity: req.options.modelIdentity })
+            .then(function (model) {
+              if (!_.isObject(model)) {
+                return next(new Error('Model definition not found: '+ req.options.modelIdentity));
+              }
+
+              req.model = model;
+              next();
+            })
+            .catch(next);
+          }
+          */
+          // Audit Like Policy
+          function audit (req, res, next){
+            
+            // persist RequestLog entry in the background and continue immediately
+            sails.models[sails.config.permission.requestlogModelIdentity].create({
+              id: req.requestId,
+              ipAddress: req.ipAddress,
+              url: _sanitizeRequestUrl(req),
+              method: req.method,
+              body: _.omit(req.body, 'password'),
+              model: req.options.modelIdentity,
+              user: req.isAuthenticated && req.user ? req.user.id : null
+            }).exec(_.identity);
+
+            //Move onto the next policies
+            next();
+
+          },
+          /**
+           * TODO - this is setting createdBy, not owner.
+           * The comment below, and the name of this file/function is confusing to me
+           * Ensure that the 'owner' property of an Object is set upon creation.
+           */
+          // Owner Like Policy
+          /*
+          function owner (req, res, next){
+            
+            //sails.log('OwnerPolicy()');
+            if (!req.user || !req.user.id) {
+              req.logout();
+              return res.send(500, new Error('req.user is not set'));
+            }
+
+            
+            //sails.log('OwnerPolicy user', req.user);
+            //sails.log('OwnerPolicy method', req.method);
+            //sails.log('OwnerPolicy req.body', req.body);
+            
+
+            if (req.options.modelDefinition.autoCreatedBy === false) {
+              // sails.log('OwnerPolicy hasOwnershipPolicy: false');
+              return next();
+            }
+
+            if ('POST' === req.method) {
+              //req.body || (req.body = { });
+              req.body.createdBy = req.user.id;
+            }
+
+            //sails.log('OwnerPolicy req.model', req.model);
+            next();
+        
+          },
+          */
+          /*
+          // Permission Like Policy
+          function permission (req, res, next) {
+            var options = {
+              model: req.model,
+              method: req.method,
+              user: req.user
+            };
+
+            PermissionService
+              .findModelPermissions(options)
+              .then(function (permissions) {
+                sails.log.silly('PermissionPolicy:', permissions.length, 'permissions grant',
+                    req.method, 'on', req.model.name, 'for', req.user.username);
+
+                if (!permissions || permissions.length === 0) {
+                  return res.badRequest({ error: PermissionService.getErrorMessage(options) });
+                }
+
+                req.permissions = permissions;
+
+                next();
+              });
+          },
+          */
+          /**
+           * Role Policy
+           * @depends Permission Policy
+           * @depends Owner Policy
+           * @depends Model Policy
+           *
+           * Verify that User is satisfactorily related to the Object's owner.
+           */
+          /*
+          function role (req, res, next) {
+            var permissions = req.permissions;
+            var relations = _.groupBy(permissions, 'relation');
+            var action = PermissionService.getMethod(req.method);
+
+            // continue if there exist role Permissions which grant the asserted privilege
+            if (!_.isEmpty(relations.role)) {
+              return next();
+            }
+
+            // inject 'owner' as a query criterion and continue if we are not mutating
+            // an existing object
+            if (!_.contains(['update', 'delete'], action)) {
+              req.query.owner = req.user.id;
+              _.isObject(req.body) && (req.body.owner = req.user.id);
+              return next();
+            }
+
+            // Make sure you have owner permissions for all models if you are mutating an existing object
+            PermissionService.findTargetObjects(req)
+              .then(function(objects) {
+                if (PermissionService.hasForeignObjects(objects, req.user)) {
+                  return res.badRequest({
+                    error: 'Cannot perform action [' + action + '] on foreign object'
+                  });
+                }
+
+                next();
+              })
+              .catch(next);
+          },
+          */
+          /**
+           * CriteriaPolicy
+           * @depends PermissionPolicy
+           *
+           * Verify that the User fulfills permission 'where' conditions and attribute blacklist restrictions
+           */
+          /*
+          function criteria (req, res, next) {
+            var permissions = req.permissions;
+
+            if (_.isEmpty(permissions)) {
+              return next();
+            }
+
+            var action = PermissionService.getMethod(req.method);
+
+            var body = req.body || req.query;
+
+            // if we are creating, we don't need to query the db, just check the where clause vs the passed in data
+            if (action === 'create') {
+              if (!PermissionService.hasPassingCriteria(body, permissions, body)) {
+                return res.badRequest({
+                  error: 'Can\'t create this object, because of failing where clause'
+                });
+              }
+              return next();
+            }
+
+
+            // set up response filters if we are not mutating an existing object
+            if (!_.contains(['update', 'delete'], action)) {
+
+              // get all of the where clauses and blacklists into one flat array
+              var criteria = _.compact(_.flatten(_.pluck(permissions, 'criteria')));
+
+              if (criteria.length) {
+                bindResponsePolicy(req, res, criteria);
+              }
+              return next();
+            }
+
+            PermissionService.findTargetObjects(req)
+              .then(function(objects) {
+
+                // attributes are not important for a delete request
+                if (action === 'delete') {
+                  body = undefined;
+                }
+
+                if (!PermissionService.hasPassingCriteria(objects, permissions, body)) {
+                  return res.badRequest({
+                    error: 'Can\'t ' + action + ', because of failing where clause or attribute permissions'
+                  });
+                }
+
+                next();
+              })
+              .catch(next);
+          }
+          */
+        ]
       }
     }
 	};
