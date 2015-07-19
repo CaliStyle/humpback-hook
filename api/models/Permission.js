@@ -38,7 +38,15 @@ module.exports = {
          */
         model: {
             model: 'Model',
-            required: true
+            //required: true
+        },
+
+        /**
+         * The Route that this Permission applies to.
+         */
+        route: {
+            model: 'Route',
+            //required: true
         },
 
         /**
@@ -54,9 +62,11 @@ module.exports = {
         },
 
         /**
+         * If permission describes a Model,
          * attributes of model that this Permission governs.
          *
-         * '*' wildcard is allowed, else only access to specified attributes
+         * '*' wildcard is allowed and the default, 
+         * else only access to specified attributes
          */
         attributes: {
             type: 'array',

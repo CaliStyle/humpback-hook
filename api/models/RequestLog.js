@@ -18,26 +18,53 @@ module.exports = {
     private: true,
 
     attributes: {
+        /**
+         * 
+         */
         id: {
             type: 'string',
             primaryKey: true
         },
+
+        /**
+         * 
+         */
         ipAddress: {
             type: 'string'
         },
+
+        /**
+         * 
+         */
         method: {
             type: 'string'
         },
+
+        /**
+         * 
+         */
         url: {
             type: 'string',
             url: true
         },
+
+        /**
+         * 
+         */
         body: {
             type: 'json'
         },
+
+        /**
+         * 
+         */
         user: {
             model: 'User'
         },
+
+        /**
+         * 
+         */
         model: {
             type: 'string'
         }

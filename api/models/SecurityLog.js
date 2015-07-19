@@ -18,6 +18,9 @@ module.exports = {
     private: true,
 
     attributes: {
+        /**
+         * 
+         */
         request: {
             model: 'RequestLog',
             primaryKey: true    

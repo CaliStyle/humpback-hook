@@ -9,7 +9,11 @@
 
 module.exports = {
 	
-	description: 'Represents a route.',
+	description: [
+        'Defines a particular route `action` that a `Role` can access.',
+        'A `User` can navigate to  a route `action` by having a `Role` which',
+        'grants the necessary `Permission`.'
+    ].join(' '),
   	
   	permissions: {
 	    'registered': {
@@ -27,14 +31,44 @@ module.exports = {
   	},
 
 	attributes: {
+  		/**
+         * 
+         */
   		route: {
   			type: 'string',
   			required: true
   		},
+
+  		/**
+         * 
+         */
+  		action: {
+  			type: 'string',
+  			index: true,
+            notNull: true,
+            enum: [
+                'GET',
+                'POST',
+                'PUT',
+                'DELETE'
+            ]
+  		},
+
+  		/**
+         * 
+         */
   		roles: {
 	    	collection: 'Role',
 	    	via: 'routes',
 	    	dominant: true
-	    }
+	    },
+
+	    /**
+         * 
+         */
+        permissions: {
+            collection: 'Permission',
+            via: 'route'
+        }
 	}
 }

@@ -39,6 +39,9 @@ module.exports = {
     },
 
     attributes: {
+        /**
+         * 
+         */
         username: {
             type: 'string',
             unique: true,
@@ -46,6 +49,10 @@ module.exports = {
             //index: true, //Waterline can not index a String as v0.10.0
             //notNull: true
         },
+
+        /**
+         * 
+         */
         email: {
             type: 'email',
             unique: true,
@@ -53,26 +60,50 @@ module.exports = {
             //index: true, //Waterline can not index a String as v0.10.0
             //notNull: true //Not all providers return an email, here's looking at you twitter!
         },
+
+        /**
+         * 
+         */
         firstName: {
             type: 'string'
         },
+
+        /**
+         * 
+         */
         lastName: {
             type: 'string'
         },
+
+        /**
+         * 
+         */
         passports: {
             collection: 'Passport',
             via: 'user'
         },
+
+        /**
+         * 
+         */
         roles: {
             collection: 'Role',
             via: 'users',
             dominant: true
         },
+
+        /**
+         * 
+         */
         getGravatarUrl: function () {
             var md5 = crypto.createHash('md5');
             md5.update(this.email);
             return 'https://gravatar.com/avatar/'+ md5.digest('hex');
         },
+
+        /**
+         * 
+         */
         toJSON: function () {
             var user = this.toObject();
             delete user.password;
