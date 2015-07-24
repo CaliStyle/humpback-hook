@@ -12,7 +12,9 @@ module.exports = {
   autoCreatedBy: false,
 
     description: 'Confers "Permission" to "User"',
-  
+    
+    reserved: true,
+
     permissions: {
         'registered': {
 			'create': {action: false,	relation: false},

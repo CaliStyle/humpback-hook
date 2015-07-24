@@ -17,6 +17,8 @@ module.exports = {
 
     private: true,
 
+    reserved: true,
+
     attributes: {
         /**
          * 

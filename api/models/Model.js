@@ -16,6 +16,8 @@ module.exports = {
     autoCreatedAt: false,
   
     autoUpdatedAt: false,
+
+    reserved: true,
     
     permissions: {
         'registered': {
