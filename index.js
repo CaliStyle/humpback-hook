@@ -209,14 +209,16 @@ function _initializeFixtures () {
     .then(function (admin) {
       sails.log('humpback-hook: admin user:', admin);
       this.admin = admin;
-      return require('./lib/permissions/permission').create(this.roles, this.models, admin);
+      return require('./lib/permissions/permission').create(this.roles, this.models, this.admin);
     })
     .then(function (permissions) {
       this.permissions = permissions;
-      return require('./lib/permissions/route').create(this.roles, this.models, this.admin);
+      //return require('./lib/permissions/route').create(this.roles, this.models, this.admin);
+      return require('./lib/permissions/route').createRoutes(this.roles, this.models, this.admin);
     })
     .then(function (routes){
-      //sails.log('humpback-hook: route permissions created');
+      sails.log('humpback-hook: routes', routes);
+      this.routes = routes;
       return routes;
     })
     .catch(function (err) {

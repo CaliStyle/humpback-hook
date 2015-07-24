@@ -14,6 +14,14 @@ module.exports = {
         'A `User` can navigate to  a route `action` by having a `Role` which',
         'grants the necessary `Permission`.'
     ].join(' '),
+
+    autoPK: true,
+  
+    autoCreatedBy: false,
+  
+    autoCreatedAt: false,
+  
+    autoUpdatedAt: false,
   	
   	permissions: {
 	    'registered': {
@@ -32,26 +40,56 @@ module.exports = {
 
 	attributes: {
   		/**
-         * 
+         * 'GET /foo/bar': 'FooController.bar'
+         * ^^^^address^^^^
          */
-  		route: {
+  		address: {
   			type: 'string',
-  			required: true
+  			required: true,
+            index: true
   		},
 
-  		/**
-         * 
+        /**
+         * 'GET /foo/bar': 'FooController.bar'
+         *                 ^^^^^^target^^^^^^^
          */
-  		action: {
-  			type: 'string',
-  			index: true,
-            notNull: true,
+        target: {
+            type: 'string',
+            required: true,
+            index: true
+        },
+
+        /**
+         * Method used to call the controller
+         */
+        method: {
+            type: 'string',
+            index: true,
+            defaultsTo: 'GET',
             enum: [
                 'GET',
                 'POST',
                 'PUT',
                 'DELETE'
             ]
+        },
+
+        /**
+         * The controller to apply policy too
+         */
+        controller: {
+            type: 'string',
+            index: true,
+            //notNull: true
+        },
+
+  		/**
+         * the controller action to apply policy too
+         */
+  		action: {
+  			type: 'string',
+  			index: true,
+            //notNull: true,
   		},
 
   		/**
