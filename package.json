@@ -25,6 +25,10 @@
     "url": "https://github.com/CaliStyle/humpback-hook/issues"
   },
   "homepage": "https://github.com/CaliStyle/humpback-hook",
+  "contributors": [{
+    "name": "scott-wyatt",
+    "github": "https://github.com/scott-wyatt"
+  }],
   "dependencies": {
     "bcryptjs": "^2.1",
     "bluebird": "^2.9.30",

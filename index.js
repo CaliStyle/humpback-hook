@@ -10,7 +10,7 @@ var normalize = require('sails/node_modules/waterline/lib/waterline/utils/normal
 var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
 var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
 var noop = function() {};
-//var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 //var wlFilter = require('waterline-criteria');
 
 /**
@@ -1059,28 +1059,26 @@ module.exports = function (sails) {
 
             });
           },
-          /*
-          // session authorization
-          function sessionAuth(req, res, next){
-            // User is allowed, proceed to the next policy, 
-            // or if this is the last policy, the controller
-            if (req.session.authenticated) {
-              return next();
-            }
-
-            res.status(403).json({ error: 'You are not permitted to perform this action.' });
-
-          },
-          */
-          /*
+        
+          // If Model manipulation, check model permissions of requested user.
           function modelPolicy (req, res, next){
             
-            var modelCache = sails._modelCache;
-            req.options.modelIdentity = actionUtil.parseModel(req).identity;
+            
+            console.log('ROUTE:',req.route);
 
-            if (_.isEmpty(req.options.modelIdentity)) {
+            var modelCache = sails._modelCache;
+            
+            if(typeof req.route.options === 'undefined'){
               return next();
             }
+
+            console.log('OPTIONS:',req.route.options);
+
+            if (_.isEmpty(actionUtil.parseModel(req).identity)) {
+              return next();
+            }
+
+            req.options.modelIdentity = actionUtil.parseModel(req).identity;
 
             req.options.modelDefinition = sails.models[req.options.modelIdentity];
             req.model = modelCache[req.options.modelIdentity];
@@ -1103,8 +1101,8 @@ module.exports = function (sails) {
               next();
             })
             .catch(next);
-          }
-          */
+          },
+          
           // Audit Like Policy
           function audit (req, res, next){
             
