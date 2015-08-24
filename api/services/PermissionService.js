@@ -296,6 +296,7 @@ module.exports = {
    * @param rolename {string} - the name of the role that the users should be added to
    */
   addUsersToRole: function(usernames, rolename) {
+    
     if (_.isEmpty(usernames)) {
       return Promise.reject(new Error('One or more usernames must be provided'));
     }
@@ -304,7 +305,7 @@ module.exports = {
       usernames = [usernames];
     }
 
-    return Role.findOne({
+    return sails.models[sails.config.permission.roleModelIdentity].findOne({
       name: rolename
     }).populate('users').then(function(role) {
       return User.find({
@@ -331,7 +332,7 @@ module.exports = {
       usernames = [usernames];
     }
 
-    return Role.findOne({
+    return sails.models[sails.config.permission.roleModelIdentity].findOne({
         name: rolename
       })
       .populate('users')
@@ -359,13 +360,13 @@ module.exports = {
    * @param options.relation {string} - the type of the relation (owner or role)
    */
   revoke: function(options) {
-    var findRole = options.role ? Role.findOne({
+    var findRole = options.role ? sails.models[sails.config.permission.roleModelIdentity].findOne({
       name: options.role
     }) : null;
-    var findUser = options.user ? User.findOne({
+    var findUser = options.user ? sails.models[sails.config.humpback.userModelIdentity].findOne({
       username: options.user
     }) : null;
-    var ok = Promise.all([findRole, findUser, Model.findOne({
+    var ok = Promise.all([findRole, findUser, sails.models[sails.config.permission.modelModelIdentity].findOne({
       name: options.model
     })]);
 
@@ -418,10 +419,10 @@ module.exports = {
   isAllowedToPerformSingle: function(user, action, model, body) {
     return function(obj) {
       return new Promise(function(resolve, reject) {
-        Model.findOne({
+        sails.models[sails.config.permission.modelModelIdentity].findOne({
           identity: model
         }).then(function(model) {
-          return Permission.find({
+          return sails.models[sails.config.permission.permissionModelIdentity].find({
             model: model.id,
             action: action,
             relation: 'user',

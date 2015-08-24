@@ -21,7 +21,7 @@ module.exports = function ModelPolicy (req, res, next) {
   sails.log.warn('Model [', req.options.modelIdentity, '] not found in model cache');
 
   // if the model is not found in the cache for some reason, get it from the database
-  Model.findOne({ identity: req.options.modelIdentity })
+  sails.models[sails.config.permission.modelModelIdentity].findOne({ identity: req.options.modelIdentity })
     .then(function (model) {
       if (!_.isObject(model)) {
         req.options.unknownModel = true;

@@ -19,10 +19,12 @@ module.exports = {
     */
     logout: function (req, res) {
         req.logout();
-        if(req.isSocket){
-            return res.ok({redirect : '/'});
+        if (!req.isSocket) {
+          res.redirect(req.query.next || '/');
         }
-        res.redirect('/');
+        else {
+          res.ok();
+        }
     },
 
     /**
@@ -77,13 +79,28 @@ module.exports = {
             var action = req.param('action');
 
             if (action === 'register') {
-                res.redirect('/register');
+                if (!req.isSocket) {
+                    res.redirect('/register');
+                }
+                else{
+
+                }
             }
             else if (action === 'login') {
-                res.redirect('/login');
+                if (!req.isSocket) {
+                    res.redirect('/login');
+                }
+                else{
+
+                }    
             }
             else if (action === 'disconnect') {
-                res.redirect('back');
+                if (!req.isSocket) {
+                    res.redirect('back');
+                }
+                else{
+                    
+                }
             }
             else {
                 // make sure the server always returns a response to the client
