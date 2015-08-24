@@ -120,15 +120,18 @@ describe('User Controller ::', function () {
 
       });
 
-      /*
-      it('should not find user if they have logged out', function (done) {
+      it('should logout', function (done) {
 
         var agent = request.agent(sails.hooks.http.app);
 
         agent
-            .get('/logout')
+            .post('/logout')
+            .send({})
             .expect(302, function (err) {
 
+              done(err);
+
+              /*
               if (err) {
                 return done(err);
               }
@@ -139,10 +142,10 @@ describe('User Controller ::', function () {
                   .end(function (err) {
                     done(err);
                   });
+              */
             });
 
       });
-      */
 
     });
 
@@ -170,13 +173,14 @@ describe('User Controller ::', function () {
 
       });
 
-      /*
-      it('should not find user if they have logged out', function (done) {
+      it('should logout', function (done) {
 
-        io.socket.get('/logout', function (data, jwres) {
+        io.socket.post('/logout', {}, function (data, jwres) {
 
           assert.equal(jwres.statusCode, 200);
-
+          done();
+          
+          /*
           io.socket.get('/user/' + userId, function(data, jwres) {
 
             assert.equal(jwres.statusCode, 403);
@@ -184,11 +188,11 @@ describe('User Controller ::', function () {
             done();
 
           });
+          */
 
         });
 
       });
-      */
 
     });
 

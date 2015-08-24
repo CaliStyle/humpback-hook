@@ -50,22 +50,22 @@ function _hashPassword (passport, next) {
  */
 module.exports = {
   
-  reserved: true,
+    reserved: true,
 
-  permissions: {
-    'registered': {
-        'create': {action: false, relation: false},
-        'read'  : {action: false, relation: false},
-        'update': {action: false, relation: false},
-        'delete': {action: false, relation: false}    
+    permissions: {
+        'registered': {
+            'create': {action: false, relation: false},
+            'read'  : {action: false, relation: false},
+            'update': {action: false, relation: false},
+            'delete': {action: false, relation: false}    
+        },
+        'public': {
+            'create': {action: false, relation: false},
+            'read'  : {action: false, relation: false},
+            'update': {action: false, relation: false},
+            'delete': {action: false, relation: false}
+        }
     },
-    'public': {
-        'create': {action: false, relation: false},
-        'read'  : {action: false, relation: false},
-        'update': {action: false, relation: false},
-        'delete': {action: false, relation: false}
-    }
-  },
 
     attributes: {
         // Required field: Protocol

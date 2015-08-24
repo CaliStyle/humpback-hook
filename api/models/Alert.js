@@ -28,20 +28,60 @@ module.exports = {
 	},
 
 	attributes: {
+		
+
 		/**
-         * 
-         */
-		type: {
-			enum: ['error','success','warning'],
+         * The message that is displayed
+         */ 
+		title: {
+			type: 'string',
 			required: true
 		},
 
 		/**
          * The message that is displayed
          */ 
-		msg: {
+		content: {
 			type: 'string',
 			required: true
+		},
+
+		/**
+         * The image that is displayed
+         */ 
+		image: {
+			type: 'string',
+		},
+
+		/**
+         * 
+         */
+		color: {
+			enum: ['error','success','warning'],
+			required: true
+		},
+
+		/**
+         * 
+         */
+		position: {
+			enum: ['top-right','top-left','bottom-right','bottom-right'],
+			defaultsTo: 'top-right'
+		},
+
+		/**
+		 *
+		 */
+		autoclose: {
+			type: 'number',
+			defaultsTo: 0
+		},
+
+		/**
+         * 
+         */
+		location: {
+			type: 'string'
 		},
 
 		/**

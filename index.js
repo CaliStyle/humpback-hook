@@ -10,8 +10,24 @@ var normalize = require('sails/node_modules/waterline/lib/waterline/utils/normal
 var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
 var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
 var noop = function() {};
-var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+
+var _policies = {
+  '*': [
+    'ModelPolicy',
+    'AuditPolicy',
+    'OwnerPolicy',
+    'PermissionPolicy',
+    'RolePolicy',
+    'CriteriaPolicy',
+    'RoutePolicy'
+  ],
+  AuthController: {
+    '*': []
+  }
+};
+//var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 //var wlFilter = require('waterline-criteria');
+
 
 /**
  * Normally these methods are added to the global HTTP IncomingMessage
@@ -122,6 +138,22 @@ function _extendReq(req) {
   };
 
   /**
+   * Test if request route is unrestricted.
+   *
+   * @return {Boolean}
+   * @api public
+   */
+  req.isUnrestricted = function() {
+    
+    //sails.config.unrestricted
+    var unrestricted = _.intersection(req.route.params, sails.config.unrestricted); 
+
+    console.log('unrestricted:', unrestricted); 
+    return unrestricted.length > 0 ? true : false;
+
+  };
+
+  /**
    * Get the IP address
    *
    * @return IP address
@@ -184,6 +216,8 @@ function _initializeFixtures () {
 		    err.message = 'humpback-hook: failed to create models';
 		    return err;
     	}
+      
+      sails.config._modelCache = _.indexBy(models, 'identity');
 
       this.models = models;
       return require('./lib/permissions/role').create();
@@ -235,7 +269,7 @@ function _initializeFixtures () {
  * the request log
  * private
  */
-
+/*
 function _sanitizeRequestUrl (req) {
   var requestUrl = url.format({
     protocol: req.protocol,
@@ -246,6 +280,7 @@ function _sanitizeRequestUrl (req) {
 
   return requestUrl.replace(/(password=).*?(&|$)/ig, '$1<hidden>$2');
 }
+*/
 
 
 /**
@@ -255,17 +290,19 @@ function _sanitizeRequestUrl (req) {
  */
 /*
 function _responsePolicy (_data, options) {
-  var req = this.req, 
-      res = this.res, 
-      user = req.owner, 
-      method = PermissionService.getMethod(req),
-      data = _.isArray(_data) ? _data : [_data];
+  var req, res, user, method, data;
+  
+  req = options.req; 
+  res = options.res; 
+  user = req.owner; 
+  method = require('./lib/services/permission').getMethod(req);
+  data = _.isArray(_data) ? _data : [_data];
 
   //sails.log('data', _data);
   //sails.log('options', options);
 
   // TODO search populated associations
-  Promise.bind(this)
+  Promise.bind(req)
     .map(data, function (object) {
       sails.log.silly(object);
       return user.getOwnershipRelation(data);
@@ -296,7 +333,7 @@ function _responsePolicy (_data, options) {
  * 
  * private
  */
-/*
+ /*
 function _bindResponsePolicy (req, res) {
   res._ok = res.ok;
 
@@ -314,16 +351,20 @@ function _bindResponsePolicy (req, res) {
 
 module.exports = function (sails) {
  	return { 
- 		defaults: {
+    
+    
+ 		
+    defaults: {
+
+      // Defaults to look for a model w/ identity
       humpback: {
-      	// Defaults to look for a model w/ identity
       	userModelIdentity: 'user',
       	settingModelIdentity: 'setting',
       	adminUsername: process.env.ADMIN_USERNAME || 'admin',
 				adminPassword: process.env.ADMIN_PASSWORD || 'admin123'
       },
+      // Defaults to look for a model w/ identity
       permission: {
-      	// Defaults to look for a model w/ identity
       	passportModelIdentity: 'passport',
         modelModelIdentity: 'model',
         permissionModelIdentity: 'permission',
@@ -332,15 +373,22 @@ module.exports = function (sails) {
         routeModelIdentity: 'route'
       },
 
+      //routes that require no policies except for passport
+      unrestricted: [
+        'auth/local',
+        'register'
+      ],
+      //humpback-hook added routes
       routes : {
         'post /register': 'UserController.create',
-        'get /logout': 'AuthController.logout',
+        'post /logout': 'AuthController.logout',
         'post /auth/local': 'AuthController.callback',
         'post /auth/local/:action': 'AuthController.callback',
         'get /auth/:provider': 'AuthController.provider',
         'get /auth/:provider/callback': 'AuthController.callback',
         'get /auth/:provider/:action': 'AuthController.callback'
       },
+      //humpback-hook added model definitions, can be overriden per model
       models: {
 
         autoCreatedBy: true,
@@ -455,18 +503,32 @@ module.exports = function (sails) {
         }
       }
     },
-    
-    _modelCache: { },
 
 		configure: function () {
       
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
+      if (!_.isObject(sails.config._modelCache)){
+        sails.config._modelCache = { };
+      }
+      if (!_.isObject(sails.config._foundationRoutes)){
+        sails.config._foundationRoutes = { };
+      }
+
+      if (!_.isObject(sails.config.policies)){
+        sails.config.policies = { };
+      }
+      sails.config.policies = _.merge(sails.config.policies, _policies);
+
+      sails.config.blueprints.populate = false;
+
+
       //create globals
       global.Promise = require('bluebird');
       global._ = require('lodash');
       _.mixin(require('congruence'));
+      //global.PermissionService = require('./lib/services/permission');
 
       //this.models = models;
      
@@ -502,6 +564,43 @@ module.exports = function (sails) {
         err.message = 'The "humpback" hook depends on the "pubsub" hook- cannot load the "humpback" hook without it!';
         return next(err);
       }
+
+      //wait for policies hook to be loaded
+      /*
+      if (sails.hooks.policies) {
+        eventsToWaitFor.push('hook:policies:bound');
+      }else{
+        err = new Error();
+        err.code = 'E_HOOK_INITIALIZE';
+        err.name = 'Humpback Hook Error';
+        err.message = 'The "humpback" hook depends on the "policies" hook- cannot load the "humpback" hook without it!';
+        return next(err);
+      }
+      */
+      //wait for router to be loaded
+      /*
+      if (sails.router) {
+        eventsToWaitFor.push('router:after');
+      }else{
+        err = new Error();
+        err.code = 'E_HOOK_INITIALIZE';
+        err.name = 'Humpback Hook Error';
+        err.message = 'The "humpback" hook depends on the "router" - cannot load the "humpback" hook without it!';
+        return next(err);
+      }
+      */
+      //wait for controllers to be loaded
+      /*
+      if (sails.hooks.controllers) {
+        eventsToWaitFor.push('hook:controllers:loaded');
+      }else{
+        err = new Error();
+        err.code = 'E_HOOK_INITIALIZE';
+        err.name = 'Humpback Hook Error';
+        err.message = 'The "humpback" hook depends on the "controllers" - cannot load the "humpback" hook without it!';
+        return next(err);
+      }
+      */
 
 			//apply validation hook
       sails.after(eventsToWaitFor, function() {
@@ -977,6 +1076,7 @@ module.exports = function (sails) {
           })
           .then(function (initializedFixtures){
           	sails.log('humpback-hook: fixtures initialized', typeof initializedFixtures);
+            sails.emit('hook:humpback:loaded');
 
           	// It's very important to trigger this callback method when you are finished
         		// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
@@ -1021,7 +1121,6 @@ module.exports = function (sails) {
               });
             });
           },
-
           
           // Remote Authorization from Header
           function allowRemoteAuthorization (req, res, next){
@@ -1059,29 +1158,51 @@ module.exports = function (sails) {
 
             });
           },
-        
+        ]
+      },
+      /*
+      after: {
+        'all /*': [
+
           // If Model manipulation, check model permissions of requested user.
           function modelPolicy (req, res, next){
             
-            
             console.log('ROUTE:',req.route);
+            console.log('IS SOCKET:', req.isSocket);
+            console.log(req.options);
 
-            var modelCache = sails._modelCache;
             
-            if(typeof req.route.options === 'undefined'){
+            
+            //console.log(_interpretRouteSyntax(req.route));
+
+
+
+            if(req.isUnrestricted()){
+              console.log('UNRESTRICTED:', req.route.params);
               return next();
             }
 
-            console.log('OPTIONS:',req.route.options);
-
-            if (_.isEmpty(actionUtil.parseModel(req).identity)) {
-              return next();
-            }
-
+            var modelCache = sails.config._modelCache;
             req.options.modelIdentity = actionUtil.parseModel(req).identity;
+
+            if (_.isEmpty(req.options.modelIdentity)) {
+              return next();
+            }
+
+
+            //console.log(req);
+            
+            //if (_.isEmpty(actionUtil.parseModel(req).identity)) {
+              //return next();
+            //}
+          
+
+            //req.options.modelIdentity = actionUtil.parseModel(req).identity;
 
             req.options.modelDefinition = sails.models[req.options.modelIdentity];
             req.model = modelCache[req.options.modelIdentity];
+
+            console.log('OPTIONS:',req.route.options);
 
             if (_.isObject(req.model) && !_.isEmpty(req.model.id)) {
               return next();
@@ -1102,7 +1223,8 @@ module.exports = function (sails) {
             })
             .catch(next);
           },
-          
+        */
+        /*
           // Audit Like Policy
           function audit (req, res, next){
             
@@ -1121,26 +1243,30 @@ module.exports = function (sails) {
             next();
 
           },
+        */  
           /**
            * TODO - this is setting createdBy, not owner.
            * The comment below, and the name of this file/function is confusing to me
            * Ensure that the 'owner' property of an Object is set upon creation.
            */
-          // Owner Like Policy
-          /*
+          // Owner Policy
+        /*  
           function owner (req, res, next){
             
-            //sails.log('OwnerPolicy()');
+            sails.log('OwnerPolicy()');
+            
+            if(req.isUnrestricted()){
+              return next();
+            }
+
             if (!req.user || !req.user.id) {
               req.logout();
               return res.send(500, new Error('req.user is not set'));
             }
 
-            
             //sails.log('OwnerPolicy user', req.user);
             //sails.log('OwnerPolicy method', req.method);
             //sails.log('OwnerPolicy req.body', req.body);
-            
 
             if (req.options.modelDefinition.autoCreatedBy === false) {
               // sails.log('OwnerPolicy hasOwnershipPolicy: false');
@@ -1156,32 +1282,42 @@ module.exports = function (sails) {
             next();
         
           },
-          */
-          /*
+        */
+        /*  
           // Permission Like Policy
           function permission (req, res, next) {
+            if(req.isUnrestricted()){
+              
+              return next();
+            }
+
             var options = {
               model: req.model,
               method: req.method,
               user: req.user
             };
 
-            PermissionService
+            require('./lib/services/permission')
               .findModelPermissions(options)
               .then(function (permissions) {
+                
                 sails.log.silly('PermissionPolicy:', permissions.length, 'permissions grant',
                     req.method, 'on', req.model.name, 'for', req.user.username);
 
                 if (!permissions || permissions.length === 0) {
-                  return res.badRequest({ error: PermissionService.getErrorMessage(options) });
+                  return res.badRequest({ error: require('./lib/services/permission').getErrorMessage(options) });
                 }
 
                 req.permissions = permissions;
 
                 next();
+              })
+              .catch(function(err){
+                console.log(err);
+                next();
               });
           },
-          */
+
           /**
            * Role Policy
            * @depends Permission Policy
@@ -1190,11 +1326,15 @@ module.exports = function (sails) {
            *
            * Verify that User is satisfactorily related to the Object's owner.
            */
-          /*
+        /*  
           function role (req, res, next) {
+            if(req.isUnrestricted()){
+              return next();
+            }
+
             var permissions = req.permissions;
             var relations = _.groupBy(permissions, 'relation');
-            var action = PermissionService.getMethod(req.method);
+            var action = require('./lib/services/permission').getMethod(req.method);
 
             // continue if there exist role Permissions which grant the asserted privilege
             if (!_.isEmpty(relations.role)) {
@@ -1210,9 +1350,9 @@ module.exports = function (sails) {
             }
 
             // Make sure you have owner permissions for all models if you are mutating an existing object
-            PermissionService.findTargetObjects(req)
+            require('./lib/services/permission').findTargetObjects(req)
               .then(function(objects) {
-                if (PermissionService.hasForeignObjects(objects, req.user)) {
+                if (require('./lib/services/permission').hasForeignObjects(objects, req.user)) {
                   return res.badRequest({
                     error: 'Cannot perform action [' + action + '] on foreign object'
                   });
@@ -1222,28 +1362,33 @@ module.exports = function (sails) {
               })
               .catch(next);
           },
-          */
+        */
           /**
            * CriteriaPolicy
            * @depends PermissionPolicy
            *
            * Verify that the User fulfills permission 'where' conditions and attribute blacklist restrictions
            */
-          /*
+        /*  
           function criteria (req, res, next) {
+            
+            if(req.isUnrestricted()){
+              return next();
+            }
+
             var permissions = req.permissions;
 
             if (_.isEmpty(permissions)) {
               return next();
             }
 
-            var action = PermissionService.getMethod(req.method);
+            var action = require('./lib/services/permission').getMethod(req.method);
 
             var body = req.body || req.query;
 
             // if we are creating, we don't need to query the db, just check the where clause vs the passed in data
             if (action === 'create') {
-              if (!PermissionService.hasPassingCriteria(body, permissions, body)) {
+              if (!require('./lib/services/permission').hasPassingCriteria(body, permissions, body)) {
                 return res.badRequest({
                   error: 'Can\'t create this object, because of failing where clause'
                 });
@@ -1256,15 +1401,15 @@ module.exports = function (sails) {
             if (!_.contains(['update', 'delete'], action)) {
 
               // get all of the where clauses and blacklists into one flat array
-              var criteria = _.compact(_.flatten(_.pluck(permissions, 'criteria')));
+              var reqCriteria = _.compact(_.flatten(_.pluck(permissions, 'criteria')));
 
-              if (criteria.length) {
-                bindResponsePolicy(req, res, criteria);
+              if (reqCriteria.length) {
+                _bindResponsePolicy(req, res, reqCriteria);
               }
               return next();
             }
 
-            PermissionService.findTargetObjects(req)
+            require('./lib/services/permission').findTargetObjects(req)
               .then(function(objects) {
 
                 // attributes are not important for a delete request
@@ -1272,7 +1417,7 @@ module.exports = function (sails) {
                   body = undefined;
                 }
 
-                if (!PermissionService.hasPassingCriteria(objects, permissions, body)) {
+                if (!require('./lib/services/permission').hasPassingCriteria(objects, permissions, body)) {
                   return res.badRequest({
                     error: 'Can\'t ' + action + ', because of failing where clause or attribute permissions'
                   });
@@ -1282,9 +1427,10 @@ module.exports = function (sails) {
               })
               .catch(next);
           }
-          */
         ]
+
       }
+      */
     }
 	};
 };

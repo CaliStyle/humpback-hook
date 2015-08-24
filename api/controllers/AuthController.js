@@ -19,6 +19,9 @@ module.exports = {
     */
     logout: function (req, res) {
         req.logout();
+        if(req.isSocket){
+            return res.ok({redirect : '/'});
+        }
         res.redirect('/');
     },
 

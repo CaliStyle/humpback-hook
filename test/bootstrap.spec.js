@@ -10,7 +10,7 @@ var ConfigOverrides = require('../config/env/testing');
     before(function (done) {
 
       // Hook will timeout in 11 seconds
-      this.timeout(11000);
+      this.timeout(110000);
 
       // Attempt to lift sails
       sails.lift( ConfigOverrides, function (err, sails) {
@@ -38,7 +38,6 @@ var ConfigOverrides = require('../config/env/testing');
 
     // After tests are complete, lower Sails
     after(function (done) {
-
       // Lower Sails (if it successfully lifted)
       if (sails) {
           return sails.lower(done);
