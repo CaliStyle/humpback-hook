@@ -99,7 +99,7 @@ module.exports = {
                     res.redirect('back');
                 }
                 else{
-                    
+
                 }
             }
             else {
@@ -125,6 +125,10 @@ module.exports = {
                 // Upon successful login, send the user to the homepage where req.user
                 // will available.
                 req.session.authenticated = true;
+
+                if (!req.isSocket && req.query.next) {
+                  res.status(302).set('Location', req.query.next);
+                }
 
                 sails.log.info('user', user, 'authenticated successfully');
                 return res.json(user);

@@ -72,6 +72,13 @@ module.exports = {
         },
 
         /**
+         * the Featured Image of this route
+         */
+        image: {
+            type: 'string'
+        },
+
+        /**
          * 'GET /foo/bar': 'FooController.bar'
          * ^^^^address^^^^
          */
@@ -97,12 +104,12 @@ module.exports = {
         method: {
             type: 'string',
             index: true,
-            defaultsTo: 'GET',
+            defaultsTo: 'get',
             enum: [
-                'GET',
-                'POST',
-                'PUT',
-                'DELETE'
+                'get',
+                'post',
+                'put',
+                'delete'
             ]
         },
 

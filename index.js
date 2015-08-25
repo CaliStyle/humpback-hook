@@ -293,15 +293,11 @@ module.exports = function (sails) {
         routeModelIdentity: 'route'
       },
 
-      //routes that require no policies except for passport
-      unrestricted: [
-        'auth/local',
-        'register'
-      ],
       //humpback-hook added routes
       routes : {
         'post /register': 'UserController.create',
         'post /logout': 'AuthController.logout',
+        'get /logout': 'AuthController.logout',
         'post /auth/local': 'AuthController.callback',
         'post /auth/local/:action': 'AuthController.callback',
         'get /auth/:provider': 'AuthController.provider',
