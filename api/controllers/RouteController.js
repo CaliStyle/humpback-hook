@@ -1,0 +1,7 @@
+/**
+ * Route Controller
+ */
+module.exports = {
+
+
+}

@@ -1,0 +1,7 @@
+/**
+ * Model Controller
+ */
+module.exports = {
+
+
+}

@@ -1,0 +1,7 @@
+/**
+ * Setting Controller
+ */
+module.exports = {
+
+
+}
