@@ -1,5 +1,5 @@
 /**
- * Permissions Controller
+ * Permission Controller
  */
 module.exports = {
 
