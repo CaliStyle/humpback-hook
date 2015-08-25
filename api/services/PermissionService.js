@@ -197,7 +197,7 @@ module.exports = {
    * @param options.permissions.criteria - optional criteria object
    * @param options.permissions.criteria.where - optional waterline query syntax object for specifying permissions
    * @param options.permissions.criteria.blacklist {string array} - optional attribute blacklist
-   * @param options.users {array of user names} - optional array of user ids that have this role
+   * @param options.users {array of user ids} - optional array of user ids that have this role
    */
   createRole: function(options) {
 

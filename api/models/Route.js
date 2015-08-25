@@ -12,7 +12,8 @@ module.exports = {
 	description: [
         'Defines a particular route `action` that a `Role` can access.',
         'A `User` can navigate to  a route `action` by having a `Role` which',
-        'grants the necessary `Permission`.'
+        'grants the necessary `Permission`. This model also stores the bare',
+        'bones for a CMS including Title, Description, URI, and Keywords'
     ].join(' '),
 
     autoPK: true,
@@ -42,6 +43,35 @@ module.exports = {
 
 	attributes: {
   		/**
+         * Title of this Route
+         */
+        title: {
+            type: 'string'
+        },
+        
+        /**
+         * Description of this Route
+         */
+        description: {
+            type: 'string'
+        },
+
+        /**
+         * Keywords for this Route
+         */
+        keywords: {
+            type: 'array',
+            defaultsTo: []
+        },
+
+        /**
+         * the URI of this route
+         */
+        uri: {
+            type: 'string'
+        },
+
+        /**
          * 'GET /foo/bar': 'FooController.bar'
          * ^^^^address^^^^
          */

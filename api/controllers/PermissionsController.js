@@ -1,0 +1,7 @@
+/**
+ * Permissions Controller
+ */
+module.exports = {
+
+
+}
