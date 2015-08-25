@@ -429,6 +429,11 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
+      if(!_.isObject(sails.config.humpback.barnacles)){
+        sails.config.humpback.barnacles = { };
+      }
+      sails.config.humpback.barnacles.core = true;
+
       if (!_.isObject(sails.config._modelCache)){
         sails.config._modelCache = { };
       }
