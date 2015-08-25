@@ -29,7 +29,7 @@ module.exports = {
 
 	attributes: {
 		/**
-         * 
+         * The Name of the Setting (this becomes the index in config.humpback.settings)
          */
 		name: {
 	    	type: 'string',
@@ -38,10 +38,18 @@ module.exports = {
 	    },
 
 	    /**
-         * 
+         * The values of the setting
          */
 	    setting: {
 	    	type: 'json'
+	    },
+
+	    /**
+         * If this setting is secure, it can not be displayed to the frontend
+         */
+	    secure: {
+	    	type: 'boolean',
+	    	defaults: false
 	    }
 	}
 };
