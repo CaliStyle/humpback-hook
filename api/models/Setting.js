@@ -10,7 +10,7 @@ module.exports = {
 
 	description: 'Represents a humpback setting.',
 
-	autoCreatedBy: false,
+	autoCreatedBy: true,
 
 	permissions: {
 	    'registered': {

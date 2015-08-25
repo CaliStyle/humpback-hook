@@ -25,6 +25,10 @@ var _policies = {
     '*': []
   }
 };
+
+var _settings = {
+
+};
 //var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 //var wlFilter = require('waterline-criteria');
 
@@ -265,6 +269,21 @@ function _initializeFixtures () {
 }
 
 /**
+ * Get All Settings from Database and set them in the humpback config.
+ * private
+ */
+function _initializeSettings () {
+  return require('./lib/settings/core').syncSettings()
+    .bind({ })
+    .then(function (settings) {
+      return settings;
+    })
+    .catch(function (err) {
+      sails.log.error(err);
+    });
+}
+
+/**
  * 
  * 
  */
@@ -429,6 +448,11 @@ module.exports = function (sails) {
         sails.config.humpback.barnacles = { };
       }
       sails.config.humpback.barnacles.core = true;
+
+      if (!_.isObject(sails.config.humpback.settings)){
+        sails.config.humpback.settings = { };
+      }
+      sails.config.humpback.settings = _.merge(sails.config.humpback.settings, _settings);
 
       if (!_.isObject(sails.config._modelCache)){
         sails.config._modelCache = { };
@@ -997,11 +1021,14 @@ module.exports = function (sails) {
           })
           .then(function (initializedFixtures){
           	sails.log('humpback-hook: fixtures initialized', typeof initializedFixtures);
+            return _initializeSettings();
+          })
+          .then(function (initializedSettings){
+            sails.log('humpback-hook: settings initialized', typeof initializedSettings);
             sails.emit('hook:humpback:loaded');
-
-          	// It's very important to trigger this callback method when you are finished
-        		// with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-        		next();
+            // It's very important to trigger this callback method when you are finished
+            // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
+            next();
           })
           .catch(function (error) {
             sails.log.error(error);
