@@ -77,6 +77,12 @@ module.exports = {
         image: {
             type: 'string'
         },
+        /**
+         * optional content for this route
+         */
+        content: {
+            type: 'string'
+        },
 
         /**
          * 'GET /foo/bar': 'FooController.bar'
