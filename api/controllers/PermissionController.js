@@ -2,6 +2,6 @@
  * Permission Controller
  */
 module.exports = {
-
+	
 
 }

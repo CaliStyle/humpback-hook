@@ -338,7 +338,6 @@ module.exports = function (sails) {
          * @param  {Function} cb       [description]
          * @return {[type]}            [description]
         */
-        
         updateOrCreate: function (criteria, values, cb) {
           var self = this; 
           var deferred;
