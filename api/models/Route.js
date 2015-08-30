@@ -49,7 +49,8 @@ module.exports = {
         id: {
             type: 'string',
             primaryKey: true,
-            required: true
+            required: true,
+            index: true
         },
 
         uri: {
