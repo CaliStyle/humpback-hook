@@ -16,7 +16,7 @@ module.exports = {
         'bones for a CMS including Title, Description, URI, and Keywords'
     ].join(' '),
 
-    autoPK: true,
+    autoPK: false,
   
     autoCreatedBy: false,
   
@@ -42,7 +42,21 @@ module.exports = {
   	},
 
 	attributes: {
-  		/**
+  		
+        /**
+         * the URI of this route
+         */
+        id: {
+            type: 'string',
+            primaryKey: true,
+            required: true
+        },
+
+        uri: {
+            type: 'string'
+        },
+
+        /**
          * Title of this Route
          */
         title: {
@@ -62,13 +76,6 @@ module.exports = {
         keywords: {
             type: 'array',
             defaultsTo: []
-        },
-
-        /**
-         * the URI of this route
-         */
-        uri: {
-            type: 'string'
         },
 
         /**
@@ -153,5 +160,12 @@ module.exports = {
             collection: 'Permission',
             via: 'route'
         }
-	}
+	},
+    beforeValidate: function(values, next) {
+        if(values.target){
+
+        }
+
+        next();
+    }
 }
