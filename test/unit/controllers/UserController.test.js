@@ -131,21 +131,23 @@ describe('User Controller ::', function () {
 
               done(err);
 
-              /*
-              if (err) {
-                return done(err);
-              }
-
-              agent
-                  .get('/user/' + userId)
-                  .expect(403)
-                  .end(function (err) {
-                    done(err);
-                  });
-              */
             });
 
       });
+      
+      /*
+      it('should not find user if unauthenticated', function (done) {
+
+        var agent = request.agent(sails.hooks.http.app);
+
+        agent
+          .get('/user/' + userId)
+          .expect(403)
+          .end(function (err) {
+            done(err);
+          });
+      });
+      */
 
     });
 
@@ -178,22 +180,27 @@ describe('User Controller ::', function () {
         io.socket.post('/logout', {}, function (data, jwres) {
 
           assert.equal(jwres.statusCode, 200);
+          
           done();
           
-          /*
-          io.socket.get('/user/' + userId, function(data, jwres) {
-
-            assert.equal(jwres.statusCode, 403);
-
-            done();
-
-          });
-          */
-
         });
 
       });
 
+      /*
+      it('should not find user if unauthenticated', function (done) {
+
+        io.socket.get('/user/'+ userId, function(data, jwres) {
+
+          assert.equal(jwres.statusCode, 403);
+
+          done();
+
+        });
+          
+      });
+      */
+    
     });
 
   });

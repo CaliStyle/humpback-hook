@@ -26,6 +26,10 @@ module.exports = {
     migrate: 'drop'
   },
 
+  blueprints: {
+    actions: true
+  },
+
   log: {
     //level: 'error'
   },

@@ -19,6 +19,13 @@ module.exports = function(req, res, next) {
     return next();
   }
 
+  // if the action on the model is public (not a user) then let them pass; 
+  if (typeof req.options.modelDefinition.permissions['public'][action] !== 'undefined'){
+    if(req.options.modelDefinition.permissions['public'][action].action){
+      return next();
+    }
+  }
+
   // inject 'owner' as a query criterion and continue if we are not mutating
   // an existing object
   if (!_.contains(['update', 'delete'], action) && req.options.modelDefinition.attributes.owner) {

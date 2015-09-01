@@ -14,6 +14,38 @@ String.prototype.slug = function() {
         .replace(/ +/g,'-');
 };
 
+function _abstractURI(address){
+
+  if (_.isString(address)){
+    address = address.split(' ').pop();
+  }
+  return address;
+
+}
+function _abstractMethod(address){
+  var method, crud = ['get','post','put','delete'];
+  if (_.isString(address)){
+    address = address.toLowerCase().split(' ')[0];
+    method = crud.indexOf(address) > -1 ? crud[crud.indexOf(address)] : 'get';
+  }
+
+  return method;
+}
+
+function _makeTargetObject(target){
+  if(_.isObject(target)){
+    return target;
+  }
+  var object = {};
+  var peices = target.split('.');
+  
+  if(peices.length > 1){
+    object.controller = peices[0];
+    object.action = peices[1];
+  }
+  return object;
+}
+
 module.exports = {
 	
 	description: [
@@ -121,13 +153,13 @@ module.exports = {
          *                 ^^^^^^target^^^^^^^
          */
         target: {
-            type: 'string',
+            type: 'json',
             required: true,
             index: true
         },
 
         /**
-         * Method used to call the controller
+         * Method (verb) used to call the controller
          */
         method: {
             type: 'string',
@@ -142,7 +174,7 @@ module.exports = {
         },
 
         /**
-         * The controller to apply policy too
+         * The controller
          */
         controller: {
             type: 'string',
@@ -177,7 +209,7 @@ module.exports = {
         },
 
         /*
-         *
+         * TODO, make route publishable at datetime
          */
         publishAt: {
             type: 'datetime'
@@ -185,7 +217,7 @@ module.exports = {
 	},
 
     /**
-     * Callback to be run before validating a User.
+     * Callback to be run before validating a Route.
      *
      * @param {Object}   values, the values for the article
      * @param {Function} next
@@ -197,7 +229,80 @@ module.exports = {
                 slug = values.title.slug();
                 values.slug = slug; 
             }
+            if(values.target){
+                values.target = _makeTargetObject(values.target);
+            }
+            if(values.address){
+                values.uri = _abstractURI(values.address);
+                values.method = _abstractMethod(address);
+            }
+
             next(null, values);
+        }
+    ],
+
+    beforeCreate: [
+        function createId(values, next){
+            values.id = new Buffer(values.method + ':' + values.uri).toString('base64');
+            next(null, values);
+        }
+    ],
+
+    /**
+     * Attach default Role to a new User
+     */
+    afterCreate: [
+        function grantPermissions(route, next){
+            
+            Promise.bind({ }, Role.find()
+                .then(function (roles) {
+                    this.roles = roles;
+                    this.permissions = [];
+
+                    //Make sure the roles have been created first
+                    if(this.roles.length > 0){
+                        var adminRole = _.find(this.roles, { name: 'admin' });
+
+                        this.permissions.push({
+                            route: route.id,
+                            action: route.method,
+                            role: adminRole.id,
+                            createdBy: route.createdBy  
+                        });
+
+                        _.remove(this.roles, {
+                            id: adminRole.id
+                        });
+
+                        _.each(this.roles, function(role){
+                          if(typeof route.defaultPermissions !== 'undefined' && route.defaultPermissions.indexOf(role.name) > -1){
+
+                            this.permissions.push({
+                              route: route.id,
+                              action: route.method,
+                              role: role.id,
+                              createdBy: route.createdBy
+                            });
+
+                          }
+                        });
+                    }
+                    return Promise.all(
+                        _.map(this.permissions, function (permission) {
+                            return Permission.findOrCreate(permission, permission); 
+                        })
+                    );
+                })
+                .then(function (permissions){
+                    
+                    return next();
+                })
+                .catch(function(e) {
+                    sails.log.error(e);
+                    next(e);
+                })
+
+            );
         }
     ]
 

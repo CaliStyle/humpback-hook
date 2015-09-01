@@ -82,5 +82,14 @@ module.exports = {
             collection: 'Alert',
             via: 'roles'
         }
-    }
+    },
+
+    /*
+    afterCreate: [
+        function giveAdminRole (role, next){
+
+
+        }
+    ]
+    */
 }

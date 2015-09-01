@@ -308,7 +308,7 @@ module.exports = {
     return sails.models[sails.config.permission.roleModelIdentity].findOne({
       name: rolename
     }).populate('users').then(function(role) {
-      return User.find({
+      return sails.models[sails.config.humpback.userModelIdentity].find({
         username: usernames
       }).then(function(users) {
         role.users.add(_.pluck(users, 'id'));
@@ -337,7 +337,7 @@ module.exports = {
       })
       .populate('users')
       .then(function(role) {
-        return User.find({
+        return sails.models[sails.config.humpback.userModelIdentity].find({
           username: usernames
         }, {
           select: ['id']

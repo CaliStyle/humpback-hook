@@ -140,22 +140,6 @@ function _extendReq(req) {
   };
 
   /**
-   * Test if request route is unrestricted.
-   *
-   * @return {Boolean}
-   * @api public
-   */
-  req.isUnrestricted = function() {
-    
-    //sails.config.unrestricted
-    var unrestricted = _.intersection(req.route.params, sails.config.unrestricted); 
-
-    console.log('unrestricted:', unrestricted); 
-    return unrestricted.length > 0 ? true : false;
-
-  };
-
-  /**
    * Get the IP address
    *
    * @return IP address
@@ -249,17 +233,18 @@ function _initializeFixtures () {
     .then(function (admin) {
       sails.log('humpback-hook: admin user:', admin);
       this.admin = admin;
-      return require('./lib/permissions/permission').create(this.roles, this.models, this.admin);
-    })
-    .then(function (permissions) {
-      this.permissions = permissions;
-      //return require('./lib/permissions/route').create(this.roles, this.models, this.admin);
+
       return require('./lib/permissions/route').createRoutes(this.roles, this.models, this.admin);
     })
     .then(function (routes){
       sails.log('humpback-hook: routes', routes);
       this.routes = routes;
-      return routes;
+
+      return require('./lib/permissions/permission').create(this.roles, this.models, this.routes, this.admin);
+    })
+    .then(function (permissions) {
+      this.permissions = permissions;
+      return permissions;
     })
     .catch(function (err) {
       sails.log.error(err);
@@ -311,15 +296,43 @@ module.exports = function (sails) {
       },
 
       //humpback-hook added routes
+      //Admins have permissions to all routes by default,
+      //If no defaultPermissions are set, they are considered public  
       routes : {
-        'post /register': 'UserController.create',
-        'post /logout': 'AuthController.logout',
-        'get /logout': 'AuthController.logout',
-        'post /auth/local': 'AuthController.callback',
-        'post /auth/local/:action': 'AuthController.callback',
-        'get /auth/:provider': 'AuthController.provider',
-        'get /auth/:provider/callback': 'AuthController.callback',
-        'get /auth/:provider/:action': 'AuthController.callback'
+        'post /register': { 
+          controller: 'UserController', 
+          action: 'create'
+        },
+        'post /logout': {
+          controller: 'AuthController', 
+          action: 'logout',
+          defaultPermissions: ['registered']
+        },
+        'get /logout': {
+          controller: 'AuthController', 
+          action: 'logout',
+          defaultPermissions: ['registered']
+        },
+        'post /auth/local': {
+          controller: 'AuthController',
+          action: 'callback'
+        },
+        'post /auth/local/:action': {
+          controller: 'AuthController', 
+          action: 'callback'
+        },
+        'get /auth/:provider': {
+          controller: 'AuthController', 
+          action: 'provider'
+        },
+        'get /auth/:provider/callback': {
+          controller: 'AuthController', 
+          action: 'callback'
+        },
+        'get /auth/:provider/:action': {
+          controller: 'AuthController', 
+          action: 'callback'
+        }
       },
       //humpback-hook added model definitions, can be overriden per model
       models: {

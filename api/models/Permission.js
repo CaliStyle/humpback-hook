@@ -77,6 +77,7 @@ module.exports = {
         /**
          * action permissions based on all controller
          * actions, including custom ones
+         * this is also used for the Route Method (Verb)
          */
         action: {
             type: 'string',
