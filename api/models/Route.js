@@ -226,25 +226,29 @@ module.exports = {
         function RouteBeforeValidate(values, next){
       
             if(values.title){
-                slug = values.title.slug();
-                values.slug = slug; 
+                values.slug  = values.title.slug();
             }
             if(values.target){
                 values.target = _makeTargetObject(values.target);
             }
             if(values.address){
                 values.uri = _abstractURI(values.address);
-                values.method = _abstractMethod(address);
+                values.method = _abstractMethod(values.address);
             }
 
             next(null, values);
         }
     ],
 
+    /**
+     * Create the ID;
+     */
     beforeCreate: [
-        function createId(values, next){
+        function createId (values, next){
+            
             values.id = new Buffer(values.method + ':' + values.uri).toString('base64');
             next(null, values);
+
         }
     ],
 
@@ -252,7 +256,7 @@ module.exports = {
      * Attach default Role to a new User
      */
     afterCreate: [
-        function grantPermissions(route, next){
+        function grantPermissions (route, next){
             
             Promise.bind({ }, Role.find()
                 .then(function (roles) {
@@ -305,5 +309,6 @@ module.exports = {
             );
         }
     ]
+
 
 }
