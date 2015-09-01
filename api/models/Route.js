@@ -6,6 +6,13 @@
 * @sails-docs     :: http://sailsjs.org/#!documentation/models
 */
 
+String.prototype.slug = function() {
+    var title = this;
+    return title
+        .toLowerCase()
+        .replace(/[^\w ]+/g,'')
+        .replace(/ +/g,'-');
+};
 
 module.exports = {
 	
@@ -18,7 +25,7 @@ module.exports = {
 
     autoPK: false,
   
-    autoCreatedBy: false,
+    autoCreatedBy: true,
   
     autoCreatedAt: true,
   
@@ -61,6 +68,13 @@ module.exports = {
          * Title of this Route
          */
         title: {
+            type: 'string'
+        },
+
+        /**
+         * Url friendly Title of this Route
+         */
+        slug: {
             type: 'string'
         },
         
@@ -160,13 +174,31 @@ module.exports = {
         permissions: {
             collection: 'Permission',
             via: 'route'
+        },
+
+        /*
+         *
+         */
+        publishAt: {
+            type: 'datetime'
         }
 	},
-    beforeValidate: function(values, next) {
-        if(values.target){
 
+    /**
+     * Callback to be run before validating a User.
+     *
+     * @param {Object}   values, the values for the article
+     * @param {Function} next
+     */
+    beforeValidate: [
+        function RouteBeforeValidate(values, next){
+      
+            if(values.title){
+                slug = values.title.slug();
+                values.slug = slug; 
+            }
+            next(null, values);
         }
+    ]
 
-        next();
-    }
 }

@@ -26,9 +26,7 @@ var _policies = {
   }
 };
 
-var _settings = {
-
-};
+var _settings = [];
 //var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 //var wlFilter = require('waterline-criteria');
 
@@ -641,8 +639,8 @@ module.exports = function (sails) {
           err = new Error();
           err.code = 'E_HOOK_INITIALIZE';
           err.name = 'Humpback Hook Error';
-          err.message = 'Could not load the humpback hook because `sails.config.humpback.routeModelIdentity` refers to an unknown model: "'+sails.config.humpback.routeModelIdentity+'".';
-          if (sails.config.humpback.routeModelIdentity === 'route') {
+          err.message = 'Could not load the humpback hook because `sails.config.humpback.routeModelIdentity` refers to an unknown model: "'+sails.config.permission.routeModelIdentity+'".';
+          if (sails.config.permission.routeModelIdentity === 'route') {
             err.message += '\nThis option defaults to `route` if unspecified or invalid- maybe you need to set or correct it?';
           }
           return next(err);
