@@ -231,13 +231,13 @@ function _initializeFixtures () {
       return user.save();
     })
     .then(function (admin) {
-      sails.log('humpback-hook: admin user:', admin);
+      sails.log.silly('humpback-hook: admin user:', admin);
       this.admin = admin;
 
       return require('./lib/permissions/route').createRoutes(this.roles, this.models, this.admin);
     })
     .then(function (routes){
-      sails.log('humpback-hook: routes', routes);
+      sails.log.silly('humpback-hook: routes', routes);
       this.routes = routes;
 
       return require('./lib/permissions/permission').create(this.roles, this.models, this.routes, this.admin);
@@ -999,7 +999,7 @@ module.exports = function (sails) {
 
         // Teach our Passport how to serialize/dehydrate a user object into an id
         sails.passport.serializeUser(function(user, done) {
-          console.log('Using primary key', UserModel.primaryKey, 'with record:',user);
+          sails.log('Using primary key', UserModel.primaryKey, 'with record:',user);
           done(null, user[UserModel.primaryKey]);
         });
 

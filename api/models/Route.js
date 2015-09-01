@@ -6,14 +6,6 @@
 * @sails-docs     :: http://sailsjs.org/#!documentation/models
 */
 
-String.prototype.slug = function() {
-    var title = this;
-    return title
-        .toLowerCase()
-        .replace(/[^\w ]+/g,'')
-        .replace(/ +/g,'-');
-};
-
 function _abstractURI(address){
 
   if (_.isString(address)){
@@ -97,48 +89,6 @@ module.exports = {
         },
 
         /**
-         * Title of this Route
-         */
-        title: {
-            type: 'string'
-        },
-
-        /**
-         * Url friendly Title of this Route
-         */
-        slug: {
-            type: 'string'
-        },
-        
-        /**
-         * Description of this Route
-         */
-        description: {
-            type: 'string'
-        },
-
-        /**
-         * Keywords for this Route
-         */
-        keywords: {
-            type: 'array',
-            defaultsTo: []
-        },
-
-        /**
-         * the Featured Image of this route
-         */
-        image: {
-            type: 'string'
-        },
-        /**
-         * optional content for this route
-         */
-        content: {
-            type: 'string'
-        },
-
-        /**
          * 'GET /foo/bar': 'FooController.bar'
          * ^^^^address^^^^
          */
@@ -206,14 +156,9 @@ module.exports = {
         permissions: {
             collection: 'Permission',
             via: 'route'
-        },
-
-        /*
-         * TODO, make route publishable at datetime
-         */
-        publishAt: {
-            type: 'datetime'
         }
+
+        
 	},
 
     /**
@@ -223,11 +168,7 @@ module.exports = {
      * @param {Function} next
      */
     beforeValidate: [
-        function RouteBeforeValidate(values, next){
-      
-            if(values.title){
-                values.slug  = values.title.slug();
-            }
+        function RouteBeforeValidateArgs(values, next){
             if(values.target){
                 values.target = _makeTargetObject(values.target);
             }
@@ -237,14 +178,11 @@ module.exports = {
             }
 
             next(null, values);
-        }
-    ],
-
-    /**
-     * Create the ID;
-     */
-    beforeCreate: [
-        function createId (values, next){
+        },
+        /**
+         * Create the ID;
+         */
+        function RouteBeforeValidateCreateId (values, next){
             
             values.id = new Buffer(values.method + ':' + values.uri).toString('base64');
             next(null, values);
@@ -256,8 +194,8 @@ module.exports = {
      * Attach default Role to a new User
      */
     afterCreate: [
-        function grantPermissions (route, next){
-            
+        function AfterCreateGrantPermissions (route, next){
+            sails.log.silly('Route.AfterCreateGrantPermissions.route', route);
             Promise.bind({ }, Role.find()
                 .then(function (roles) {
                     this.roles = roles;
@@ -298,7 +236,7 @@ module.exports = {
                     );
                 })
                 .then(function (permissions){
-                    
+                    sails.log.silly('Route.AfterCreateGrantPermissions.permissions', permissions);
                     return next();
                 })
                 .catch(function(e) {

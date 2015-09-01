@@ -57,6 +57,7 @@ module.exports = {
          * 
          */
 		color: {
+			type: 'string',
 			enum: ['error','success','warning'],
 			required: true
 		},
@@ -65,6 +66,7 @@ module.exports = {
          * 
          */
 		position: {
+			type: 'string',
 			enum: ['top-right','top-left','bottom-right','bottom-right'],
 			defaultsTo: 'top-right'
 		},

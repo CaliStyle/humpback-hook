@@ -31,11 +31,12 @@ module.exports = {
   },
 
   log: {
-    //level: 'error'
+    level: 'error'
   },
   
   policies: {
-    UserController: { create: true }
+    UserController: { create: true },
+    RouteController: { create: true, find: true, findOne: true }
   }
 
 

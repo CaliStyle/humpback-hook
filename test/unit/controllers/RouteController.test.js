@@ -23,22 +23,44 @@ describe('Route Controller ::', function () {
 	});
 
 	describe('Create Route', function() {
+	    var routeId;
+
 	    it ('Admin Should be able create Route', function (done) {
 
-	        request(sails.hooks.http.app)
-	            .post('/route')
-	            .send({
-	              address: 'get /hello',
-	              target: {
-					view: 'home/index'
-				  },
-				  title: 'Hello World'
-	            })
-	            .expect(200)
-	            .end(function(err) {
-	              done(err);
-	            });
+	        var agent = request.agent(sails.hooks.http.app);
 
+        	agent
+            .post('/route')
+            .send({
+              address: 'get /hello',
+              target: {
+				view: 'home/index'
+			  }
+            })
+            .expect(201, function (err, res) {
+
+            	if (err) {
+                	return done(err);
+              	}
+
+              routeId = res.body.id;
+              done();
+
+          	});
+
+	    });
+	    
+	    it ('Admin Should be able get Route', function (done) {
+
+	        var agent = request.agent(sails.hooks.http.app);
+	            
+            agent
+            .get('/route/' + routeId)
+            .expect(200, function (err) {
+
+         	 	done(err);
+
+        	});
 	    });
 	});
 	
