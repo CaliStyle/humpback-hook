@@ -6,13 +6,15 @@ module.exports = {
    */
     findTargetRoute: function(req) {
     	
-    	var method = req.method.toLowerCase();
+    	var verb = req.method.toLowerCase();
 		var uri = req.url;
-		var id = new Buffer(method + ':' + uri).toString('base64');
+		var id = new Buffer(verb + ':' + uri).toString('base64');
 		
-		console.log("ROUTE:", method, uri);
+		var check = new Buffer(id, 'base64').toString().split(':');
 
-		console.log(id);
+		console.log("ROUTE:", verb, uri);
+
+		console.log(id, check[0], check[1]);
 
 		return sails.models[sails.config.permission.routeModelIdentity].findOne(id).populate('permissions');
 

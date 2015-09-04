@@ -14,14 +14,14 @@ function _abstractURI(address){
   return address;
 
 }
-function _abstractMethod(address){
-  var method, crud = ['get','post','put','delete'];
+function _abstractVerb(address){
+  var verb, crud = ['get','post','put','delete'];
   if (_.isString(address)){
     address = address.toLowerCase().split(' ')[0];
-    method = crud.indexOf(address) > -1 ? crud[crud.indexOf(address)] : 'get';
+    verb = crud.indexOf(address) > -1 ? crud[crud.indexOf(address)] : 'get';
   }
 
-  return method;
+  return verb;
 }
 
 function _makeTargetObject(target){
@@ -74,67 +74,67 @@ module.exports = {
 
 	attributes: {
   		
-        /**
-         * the URI of this route
-         */
-        id: {
-            type: 'string',
-            primaryKey: true,
-            required: true,
-            index: true
-        },
+      /**
+       * the URI of this route
+       */
+      id: {
+          type: 'string',
+          primaryKey: true,
+          required: true,
+          index: true
+      },
 
-        uri: {
-            type: 'string'
-        },
+      uri: {
+          type: 'string'
+      },
 
-        /**
-         * 'GET /foo/bar': 'FooController.bar'
-         * ^^^^address^^^^
-         */
+      /**
+       * 'GET /foo/bar': 'FooController.bar'
+       * ^^^^address^^^^
+       */
   		address: {
   			type: 'string',
   			required: true,
             index: true
   		},
 
-        /**
-         * 'GET /foo/bar': 'FooController.bar'
-         *                 ^^^^^^target^^^^^^^
-         */
-        target: {
-            type: 'json',
-            required: true,
-            index: true
-        },
+      /**
+       * 'GET /foo/bar': 'FooController.bar'
+       *                 ^^^^^^target^^^^^^^
+       */
+      target: {
+          type: 'json',
+          required: true,
+          index: true
+      },
 
-        /**
-         * Method (verb) used to call the controller
-         */
-        method: {
-            type: 'string',
-            index: true,
-            defaultsTo: 'get',
-            enum: [
-                'get',
-                'post',
-                'put',
-                'delete'
-            ]
-        },
+      /**
+       * Verb (method) used to call the controller
+       */
+      verb: {
+          type: 'string',
+          index: true,
+          defaultsTo: 'get',
+          enum: [
+              'get',
+              'post',
+              'put',
+              'delete'
+          ]
+      },
 
-        /**
-         * The controller
-         */
-        controller: {
-            type: 'string',
-            index: true,
-            //notNull: true
-        },
+      /**
+       * The controller
+       */
+      controller: {
+          type: 'string',
+          index: true,
+          //notNull: true
+      },
 
   		/**
-         * the controller action to apply policy too
-         */
+       * the controller action to apply policy too
+       */
   		action: {
   			type: 'string',
   			index: true,
@@ -151,14 +151,13 @@ module.exports = {
 	    },
 
 	    /**
-         * 
-         */
-        permissions: {
-            collection: 'Permission',
-            via: 'route'
-        }
-
-        
+       * 
+       */
+      permissions: {
+          collection: 'Permission',
+          via: 'route'
+      }
+ 
 	},
 
     /**
@@ -174,7 +173,7 @@ module.exports = {
             }
             if(values.address){
                 values.uri = _abstractURI(values.address);
-                values.method = _abstractMethod(values.address);
+                values.verb = _abstractVerb(values.address);
             }
 
             next(null, values);
@@ -184,14 +183,14 @@ module.exports = {
          */
         function RouteBeforeValidateCreateId (values, next){
             
-            values.id = new Buffer(values.method + ':' + values.uri).toString('base64');
+            values.id = new Buffer(values.verb + ':' + values.uri).toString('base64');
             next(null, values);
 
         }
     ],
 
     /**
-     * Attach default Role to a new User
+     * Attach Roles to a new Route
      */
     afterCreate: [
         function AfterCreateGrantPermissions (route, next){
@@ -207,7 +206,7 @@ module.exports = {
 
                         this.permissions.push({
                             route: route.id,
-                            action: route.method,
+                            action: route.verb,
                             role: adminRole.id,
                             createdBy: route.createdBy  
                         });
@@ -221,7 +220,7 @@ module.exports = {
 
                             this.permissions.push({
                               route: route.id,
-                              action: route.method,
+                              action: route.verb,
                               role: role.id,
                               createdBy: route.createdBy
                             });
@@ -247,6 +246,4 @@ module.exports = {
             );
         }
     ]
-
-
 }

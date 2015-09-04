@@ -474,6 +474,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.policies)){
         sails.config.policies = { };
       }
+      
       sails.config.policies = _.merge(sails.config.policies, _policies);
 
       sails.config.blueprints.populate = false;
