@@ -4,6 +4,7 @@ var url = require('url');
 
 module.exports = function (req, res, next) {
 
+  //console.log("Audit Policy","DID I RUN?????");
   //var ipAddress = req.isSocket ? req.socket.handshake.address : req.headers['x-forwarded-for'] || (req.connection && req.connection.remoteAddress);
   //req.ipAddress = ipAddress;
 

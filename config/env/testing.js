@@ -31,13 +31,18 @@ module.exports = {
   },
 
   log: {
-    level: 'error'
+    level: 'verbose'
   },
   
   policies: {
-    UserController: { create: true },
+    UserController: { create: true }
+  }
+  /*
+  policies: {
+    UserController: { create: true, find: true, findOne: true, update: true },
     RouteController: { create: true, find: true, findOne: true }
   }
+  */
 
 
 };

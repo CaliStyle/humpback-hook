@@ -5,10 +5,29 @@ var request = require('supertest');
 //var _ = require('lodash');
 
 describe('Route Controller ::', function () {
-	describe('Admin Login', function () {
-		it ('Admin Should be able to Login to Create a route', function (done) {
+	
+	var routeId;
 
-	        request(sails.hooks.http.app)
+	describe('Admin Routing', function () {
+		
+	    it ('should be not found', function (done) {
+
+	        var agent = request.agent(sails.hooks.http.app);
+	            
+            agent
+            .get('/hello')
+            .expect(404, function (err) {
+
+         	 	done(err);
+
+        	});
+	    });
+
+	    it ('should be able to Login, create, and get route', function (done) {
+
+	        var agent = request.agent(sails.hooks.http.app);
+
+        	agent
 	            .post('/auth/local')
 	            .send({
 	              identifier: 'admin',
@@ -16,53 +35,51 @@ describe('Route Controller ::', function () {
 	            })
 	            .expect(200)
 	            .end(function(err) {
-	              done(err);
+	              //done(err);
+	            	if (err) {
+	            		return done(err);
+	            	}
+
+	            	agent
+			            .post('/route')
+			            .send({
+			              address: 'get /hello',
+			              target: {
+							view: 'home/index'
+						  }
+			            })
+			            .expect(201, function (err, res) {
+
+			            	if (err) {
+			                	return done(err);
+			              	}
+
+			            	routeId = res.body.id;
+			            	
+			            	agent
+					            .get('/route/' + routeId)
+					            .expect(200, function (err) {
+
+					         	 	done(err);
+
+					        	});
+			          	});
 	            });
-
 	    });
-	});
 
-	describe('Create Route', function() {
-	    var routeId;
-
-	    it ('Admin Should be able create Route', function (done) {
-
-	        var agent = request.agent(sails.hooks.http.app);
-
-        	agent
-            .post('/route')
-            .send({
-              address: 'get /hello',
-              target: {
-				view: 'home/index'
-			  }
-            })
-            .expect(201, function (err, res) {
-
-            	if (err) {
-                	return done(err);
-              	}
-
-              routeId = res.body.id;
-              done();
-
-          	});
-
-	    });
 	    
-	    it ('Admin Should be able get Route', function (done) {
+	    it ('should be able get Route', function (done) {
 
 	        var agent = request.agent(sails.hooks.http.app);
 	            
             agent
-            .get('/route/' + routeId)
-            .expect(200, function (err) {
+	            .get('/route/' + routeId)
+	            .expect(200, function (err) {
 
-         	 	done(err);
+	         	 	done(err);
 
-        	});
+	        	});
 	    });
+	    
 	});
-	
-
 });

@@ -20,6 +20,13 @@
  * @param {Function} next
  */
 module.exports = function (req, res, next) {
+  
+  //console.log("Permission Policy","DID I RUN?????");
+  
+  if (req.options.modelUnlocked) {
+    return next();
+  }
+
   var options = {
     model: req.model,
     method: req.method,

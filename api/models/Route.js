@@ -41,209 +41,212 @@ function _makeTargetObject(target){
 module.exports = {
 	
 	description: [
-        'Defines a particular route `action` that a `Role` can access.',
-        'A `User` can navigate to  a route `action` by having a `Role` which',
-        'grants the necessary `Permission`. This model also stores the bare',
-        'bones for a CMS including Title, Description, URI, and Keywords'
-    ].join(' '),
+    'Defines a particular route `action` that a `Role` can access.',
+    'A `User` can navigate to  a route `action` by having a `Role` which',
+    'grants the necessary `Permission`. This model also stores the bare',
+    'bones for a CMS including Title, Description, URI, and Keywords'
+  ].join(' '),
 
-    autoPK: false,
+  autoPK: false,
   
-    autoCreatedBy: true,
+  autoCreatedBy: true,
   
-    autoCreatedAt: true,
+  autoCreatedAt: true,
   
-    autoUpdatedAt: true,
+  autoUpdatedAt: true,
 
-    reserved: true,
-  	
-  	permissions: {
-	    'registered': {
-			'create': {action: false,	relation: false},
-			'read' 	: {action: true,	relation: false},
-    		'update': {action: false,	relation: false},
-    		'delete': {action: false,	relation: false}		
-    	},
-		'public': {
-			'create': {action: false,	relation: false},
-			'read' 	: {action: true,	relation: false},
-    		'update': {action: false,	relation: false},
-    		'delete': {action: false,	relation: false}
-		}
-  	},
+  reserved: true,
+  
+  permissions: {
+    'registered': {
+      'create': {action: false,	relation: false},
+      'read' 	: {action: true,	relation: false},
+      'update': {action: false,	relation: false},
+      'delete': {action: false,	relation: false}		
+    },
+    'public': {
+      'create': {action: false,	relation: false},
+      'read' 	: {action: true,	relation: false},
+      'update': {action: false,	relation: false},
+      'delete': {action: false,	relation: false}
+    }
+  },
 
 	attributes: {
   		
-      /**
-       * the URI of this route
-       */
-      id: {
-          type: 'string',
-          primaryKey: true,
-          required: true,
+    /**
+     * base encoded verb:URI of this route
+     */
+    id: {
+        type: 'string',
+        primaryKey: true,
+        required: true,
+        index: true
+    },
+
+    /**
+     * the URI of this route
+     */
+    uri: {
+        type: 'string'
+    },
+
+    /**
+     * 'GET /foo/bar': 'FooController.bar'
+     * ^^^^address^^^^
+     */
+		address: {
+			type: 'string',
+			required: true,
           index: true
-      },
+		},
 
-      uri: {
-          type: 'string'
-      },
+    /**
+     * 'GET /foo/bar': 'FooController.bar'
+     *                 ^^^^^^target^^^^^^^
+     */
+    target: {
+        type: 'json',
+        required: true,
+        index: true
+    },
 
-      /**
-       * 'GET /foo/bar': 'FooController.bar'
-       * ^^^^address^^^^
-       */
-  		address: {
-  			type: 'string',
-  			required: true,
-            index: true
-  		},
+    /**
+     * Verb (method) used to call the controller
+     */
+    verb: {
+        type: 'string',
+        index: true,
+        defaultsTo: 'get',
+        enum: [
+            'get',
+            'post',
+            'put',
+            'delete'
+        ]
+    },
 
-      /**
-       * 'GET /foo/bar': 'FooController.bar'
-       *                 ^^^^^^target^^^^^^^
-       */
-      target: {
-          type: 'json',
-          required: true,
-          index: true
-      },
+    /**
+     * The controller
+     */
+    controller: {
+        type: 'string',
+        index: true,
+        //notNull: true
+    },
 
-      /**
-       * Verb (method) used to call the controller
-       */
-      verb: {
-          type: 'string',
-          index: true,
-          defaultsTo: 'get',
-          enum: [
-              'get',
-              'post',
-              'put',
-              'delete'
-          ]
-      },
+		/**
+     * the controller action to apply policy too
+     */
+		action: {
+			type: 'string',
+			index: true,
+          //notNull: true,
+		},
 
-      /**
-       * The controller
-       */
-      controller: {
-          type: 'string',
-          index: true,
-          //notNull: true
-      },
-
-  		/**
-       * the controller action to apply policy too
-       */
-  		action: {
-  			type: 'string',
-  			index: true,
-            //notNull: true,
-  		},
-
-  		/**
-         * 
-         */
-  		roles: {
-	    	collection: 'Role',
-	    	via: 'routes',
-	    	dominant: true
-	    },
-
-	    /**
+		/**
        * 
        */
-      permissions: {
-          collection: 'Permission',
-          via: 'route'
-      }
+		roles: {
+    	collection: 'Role',
+    	via: 'routes',
+    	dominant: true
+    },
+
+    /**
+     * 
+     */
+    permissions: {
+        collection: 'Permission',
+        via: 'route'
+    }
  
 	},
 
+  /**
+   * Callback to be run before validating a Route.
+   *
+   * @param {Object}   values, the values for the article
+   * @param {Function} next
+   */
+  beforeValidate: [
+    function RouteBeforeValidateArgs(values, next){
+      if(values.target){
+          values.target = _makeTargetObject(values.target);
+      }
+      if(values.address){
+          values.uri = _abstractURI(values.address);
+          values.verb = _abstractVerb(values.address);
+      }
+
+      next(null, values);
+    },
     /**
-     * Callback to be run before validating a Route.
-     *
-     * @param {Object}   values, the values for the article
-     * @param {Function} next
+     * Create the ID;
      */
-    beforeValidate: [
-        function RouteBeforeValidateArgs(values, next){
-            if(values.target){
-                values.target = _makeTargetObject(values.target);
-            }
-            if(values.address){
-                values.uri = _abstractURI(values.address);
-                values.verb = _abstractVerb(values.address);
-            }
+    function RouteBeforeValidateCreateId (values, next){
+        
+      values.id = new Buffer(values.verb + ':' + values.uri).toString('base64');
+      next(null, values);
 
-            next(null, values);
-        },
-        /**
-         * Create the ID;
-         */
-        function RouteBeforeValidateCreateId (values, next){
-            
-            values.id = new Buffer(values.verb + ':' + values.uri).toString('base64');
-            next(null, values);
+    }
+  ],
 
-        }
-    ],
+  /**
+   * Attach Roles to a new Route
+   */
+  afterCreate: [
+    function AfterCreateGrantPermissions (route, next){
+      sails.log.silly('Route.AfterCreateGrantPermissions.route', route);
+      Promise.bind({ }, Role.find()
+        .then(function (roles) {
+          this.roles = roles;
+          this.permissions = [];
 
-    /**
-     * Attach Roles to a new Route
-     */
-    afterCreate: [
-        function AfterCreateGrantPermissions (route, next){
-            sails.log.silly('Route.AfterCreateGrantPermissions.route', route);
-            Promise.bind({ }, Role.find()
-                .then(function (roles) {
-                    this.roles = roles;
-                    this.permissions = [];
+          //Make sure the roles have been created first
+          if(this.roles.length > 0){
+              var adminRole = _.find(this.roles, { name: 'admin' });
 
-                    //Make sure the roles have been created first
-                    if(this.roles.length > 0){
-                        var adminRole = _.find(this.roles, { name: 'admin' });
+              this.permissions.push({
+                  route: route.id,
+                  action: route.verb,
+                  role: adminRole.id,
+                  createdBy: route.createdBy  
+              });
 
-                        this.permissions.push({
-                            route: route.id,
-                            action: route.verb,
-                            role: adminRole.id,
-                            createdBy: route.createdBy  
-                        });
+              _.remove(this.roles, {
+                  id: adminRole.id
+              });
 
-                        _.remove(this.roles, {
-                            id: adminRole.id
-                        });
+              _.each(this.roles, function(role){
+                if(typeof route.defaultPermissions !== 'undefined' && route.defaultPermissions.indexOf(role.name) > -1){
 
-                        _.each(this.roles, function(role){
-                          if(typeof route.defaultPermissions !== 'undefined' && route.defaultPermissions.indexOf(role.name) > -1){
+                  this.permissions.push({
+                    route: route.id,
+                    action: route.verb,
+                    role: role.id,
+                    createdBy: route.createdBy
+                  });
 
-                            this.permissions.push({
-                              route: route.id,
-                              action: route.verb,
-                              role: role.id,
-                              createdBy: route.createdBy
-                            });
+                }
+              });
+          }
+          return Promise.all(
+              _.map(this.permissions, function (permission) {
+                  return Permission.findOrCreate(permission, permission); 
+              })
+          );
+        })
+        .then(function (permissions){
+            sails.log.silly('Route.AfterCreateGrantPermissions.permissions', permissions);
+            return next();
+        })
+        .catch(function(e) {
+            sails.log.error(e);
+            next(e);
+        })
 
-                          }
-                        });
-                    }
-                    return Promise.all(
-                        _.map(this.permissions, function (permission) {
-                            return Permission.findOrCreate(permission, permission); 
-                        })
-                    );
-                })
-                .then(function (permissions){
-                    sails.log.silly('Route.AfterCreateGrantPermissions.permissions', permissions);
-                    return next();
-                })
-                .catch(function(e) {
-                    sails.log.error(e);
-                    next(e);
-                })
-
-            );
-        }
-    ]
+      );
+    }
+  ]
 }

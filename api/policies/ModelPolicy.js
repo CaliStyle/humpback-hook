@@ -7,6 +7,8 @@ module.exports = function ModelPolicy (req, res, next) {
   var modelCache = sails.config._modelCache;
   req.options.modelIdentity = actionUtil.parseModel(req).identity;
 
+  //console.log("Model Policy","DID I RUN?????");
+
   if (_.isEmpty(req.options.modelIdentity)) {
     return next();
   }
@@ -14,7 +16,20 @@ module.exports = function ModelPolicy (req, res, next) {
   req.options.modelDefinition = sails.models[req.options.modelIdentity];
   req.model = modelCache[req.options.modelIdentity];
 
+  //console.log(req.model);
   if (_.isObject(req.model) && !_.isNull(req.model.id)) {
+    
+    if(_.isObject(req.model.permissions) && _.isObject(req.model.permissions.public)){
+      
+      var method = PermissionService.getMethod(req.method);
+
+      //console.log(req.model.permissions.public, method);
+      if(_.isObject(req.model.permissions.public[method]) && req.model.permissions.public[method].action){
+        sails.log.verbose("Model modelUnlocked");
+        req.options.modelUnlocked = true;
+      }
+    }
+
     return next();
   }
 
@@ -39,3 +54,4 @@ module.exports = function ModelPolicy (req, res, next) {
     })
     .catch(next);
 };
+

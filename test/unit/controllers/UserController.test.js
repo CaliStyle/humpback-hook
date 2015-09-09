@@ -135,7 +135,7 @@ describe('User Controller ::', function () {
 
       });
       
-      /*
+      
       it('should not find user if unauthenticated', function (done) {
 
         var agent = request.agent(sails.hooks.http.app);
@@ -147,7 +147,7 @@ describe('User Controller ::', function () {
             done(err);
           });
       });
-      */
+    
 
     });
 
@@ -187,7 +187,7 @@ describe('User Controller ::', function () {
 
       });
 
-      /*
+      
       it('should not find user if unauthenticated', function (done) {
 
         io.socket.get('/user/'+ userId, function(data, jwres) {
@@ -199,7 +199,6 @@ describe('User Controller ::', function () {
         });
           
       });
-      */
     
     });
 

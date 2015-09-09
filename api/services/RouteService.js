@@ -12,7 +12,7 @@ module.exports = {
 		
 		var check = new Buffer(id, 'base64').toString().split(':');
 
-		console.log("ROUTE:", verb, uri);
+		//console.log("ROUTE:", verb, uri);
 
 		console.log(id, check[0], check[1]);
 

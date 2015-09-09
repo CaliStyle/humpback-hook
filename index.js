@@ -11,7 +11,9 @@ var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/
 var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
 var noop = function() {};
 
+/*
 var _policies = {
+
   '*': [
     'ModelPolicy',
     'AuditPolicy',
@@ -23,8 +25,9 @@ var _policies = {
   ],
   AuthController: {
     '*': []
-  }
+  }  
 };
+*/
 
 var _settings = [];
 //var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
@@ -471,11 +474,13 @@ module.exports = function (sails) {
         sails.config._foundationRoutes = { };
       }
 
+      /*
       if (!_.isObject(sails.config.policies)){
         sails.config.policies = { };
       }
       
       sails.config.policies = _.merge(sails.config.policies, _policies);
+      */
 
       sails.config.blueprints.populate = false;
 
@@ -491,7 +496,6 @@ module.exports = function (sails) {
     },
 		initialize: function (next) {
 			var err, eventsToWaitFor = [];
-
 
 			// Validate `userModelIdentity` config
       if (typeof sails.config.humpback.userModelIdentity !== 'string') {
@@ -510,6 +514,7 @@ module.exports = function (sails) {
         return next(err);
       }
 
+      /*
       //wait for pub sub hook to be loaded
       if (sails.hooks.pubsub) {
         eventsToWaitFor.push('hook:pubsub:loaded');
@@ -522,7 +527,7 @@ module.exports = function (sails) {
       }
 
       //wait for policies hook to be loaded
-      /*
+      
       if (sails.hooks.policies) {
         eventsToWaitFor.push('hook:policies:bound');
       }else{
@@ -533,6 +538,7 @@ module.exports = function (sails) {
         return next(err);
       }
       */
+      
       //wait for router to be loaded
       /*
       if (sails.router) {

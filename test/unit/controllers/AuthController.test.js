@@ -15,6 +15,7 @@ describe('Auth Controller ::', function () {
             .post('/auth/local')
             .send({
               identifier: 'existing.user@email.com',
+              //identifier: 'admin',
               password: 'admin123'
             })
             .expect(200)

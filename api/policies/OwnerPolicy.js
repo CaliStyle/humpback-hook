@@ -4,17 +4,26 @@
  * Ensure that the 'owner' property of an Object is set upon creation.
  */
 module.exports = function OwnerPolicy (req, res, next) {
+  
+  //console.log("Owner Policy","DID I RUN?????");
+  
   //sails.log('OwnerPolicy()');
-  if (!req.user || !req.user.id) {
-    req.logout();
-    return res.send(500, new Error('req.user is not set'));
+  if (req.options.modelUnlocked) {
+    return next();
   }
 
-  /*
-  sails.log('OwnerPolicy user', req.user);
-  sails.log('OwnerPolicy method', req.method);
-  sails.log('OwnerPolicy req.body', req.body);
-  */
+  if (!req.user || !req.user.id) {
+    req.logout();
+    return res.forbidden({ error: 'Authenticiation Required' });
+    //return res.send(500, new Error('req.user is not set'));
+  }
+
+  //console.log("OWNER Policy","DID I MAKE IT HERE?????");
+  
+  sails.log.verbose('OwnerPolicy user', req.user);
+  sails.log.verbose('OwnerPolicy method', req.method);
+  sails.log.verbose('OwnerPolicy req.body', req.body);
+  
 
   if (req.options.modelDefinition.autoCreatedBy === false) {
     // sails.log('OwnerPolicy hasOwnershipPolicy: false');

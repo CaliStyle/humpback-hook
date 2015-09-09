@@ -7,6 +7,13 @@
  * Verify that User is satisfactorily related to the Object's owner.
  */
 module.exports = function(req, res, next) {
+  
+  //console.log("Role Policy","DID I RUN?????");
+  
+  if (req.options.modelUnlocked) {
+    return next();
+  }
+
   var permissions = req.permissions;
   var relations = _.groupBy(permissions, 'relation');
   var action = PermissionService.getMethod(req.method);
