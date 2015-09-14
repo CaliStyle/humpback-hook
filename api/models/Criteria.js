@@ -13,6 +13,7 @@ module.exports = {
 
   description: 'Specifies more granular limits on a permission',
   
+  //Global Permissions override all local permissions
   private: true,
 
   reserved: true,

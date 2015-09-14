@@ -15,6 +15,7 @@ module.exports = {
   
     description: 'Represents a Security Log Entry.',
 
+    //Global Permissions override all local permissions
     private: true,
 
     reserved: true,

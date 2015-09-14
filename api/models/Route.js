@@ -57,6 +57,7 @@ module.exports = {
 
   reserved: true,
   
+  //Global Permissions override all local permissions
   permissions: {
     'registered': {
       'create': {action: false,	relation: false},
@@ -85,6 +86,12 @@ module.exports = {
     },
 
     /**
+     * The Ordering of routes
+     */
+    order: {
+      type: 'integer'
+    },
+    /**
      * the URI of this route
      */
     uri: {
@@ -98,7 +105,7 @@ module.exports = {
 		address: {
 			type: 'string',
 			required: true,
-          index: true
+      index: true
 		},
 
     /**
@@ -106,24 +113,24 @@ module.exports = {
      *                 ^^^^^^target^^^^^^^
      */
     target: {
-        type: 'json',
-        required: true,
-        index: true
+      type: 'json',
+      //required: true,
+      index: true
     },
 
     /**
      * Verb (method) used to call the controller
      */
     verb: {
-        type: 'string',
-        index: true,
-        defaultsTo: 'get',
-        enum: [
-            'get',
-            'post',
-            'put',
-            'delete'
-        ]
+      type: 'string',
+      index: true,
+      defaultsTo: 'get',
+      enum: [
+          'get',
+          'post',
+          'put',
+          'delete'
+      ]
     },
 
     /**
@@ -141,7 +148,7 @@ module.exports = {
 		action: {
 			type: 'string',
 			index: true,
-          //notNull: true,
+      //notNull: true,
 		},
 
 		/**

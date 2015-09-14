@@ -52,6 +52,7 @@ module.exports = {
   
     reserved: true,
 
+    //Global Permissions override all local permissions
     permissions: {
         'registered': {
             'create': {action: false, relation: false},

@@ -16,6 +16,7 @@ module.exports = {
         'grants the necessary `Permission`.'
     ].join(' '),
 
+    //Global Permissions override all local permissions
     permissions: {
         'registered': {
             'create': {action: false, relation: false},
