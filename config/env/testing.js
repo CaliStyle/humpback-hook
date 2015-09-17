@@ -20,7 +20,7 @@ module.exports = {
     // Skip grunt (unless your hook uses it)
     'grunt': false
   },
-  //Set the model settigns
+  //Set the model settings
   models: {
     connection: 'localDiskDb',
     migrate: 'drop'
@@ -36,6 +36,14 @@ module.exports = {
   
   policies: {
     UserController: { create: true }
+  },
+
+  humpback: {
+    settings: [
+      {
+        'googleAnalytics' : 'hello'
+      }
+    ]
   }
   /*
   policies: {

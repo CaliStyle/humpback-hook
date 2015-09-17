@@ -50,7 +50,7 @@ module.exports = {
          */
 	    secure: {
 	    	type: 'boolean',
-	    	defaults: false
+	    	defaultsTo: false
 	    }
 	}
 };
