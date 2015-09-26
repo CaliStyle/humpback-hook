@@ -188,7 +188,14 @@ module.exports = {
                     return Role.findOne({ name: 'registered' });
                 })
                 .then(function (role) {
-                    this.user.roles.add(role.id);
+                    
+                    var registered = _.some(this.user.roles, function (userRole) {
+                        return userRole.id === role.id;
+                    });
+
+                    if(!registered){
+                        this.user.roles.add(role.id);
+                    }
                     return this.user.save();
                 })
                 .then(function (updatedUser) {
