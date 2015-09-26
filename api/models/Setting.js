@@ -42,7 +42,7 @@ module.exports = {
          * The values of the setting
          */
 	    setting: {
-	    	type: 'json'
+	    	type: 'string'
 	    },
 
 	    //The type of setting eg. string, json, array, boolean
