@@ -45,6 +45,21 @@ module.exports = {
 	    	type: 'json'
 	    },
 
+	    //The type of setting eg. string, json, array, boolean
+	    type: {
+	    	type: 'string'
+	    },
+
+	    //The description of the settting
+	    description: {
+	    	type: 'string'
+	    },
+
+	    //The displayed title of the setting
+	    title: {
+	    	type: 'string'
+	    },
+
 	    /**
          * If this setting is secure, it can not be displayed to the frontend
          */

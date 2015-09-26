@@ -29,7 +29,15 @@ var _policies = {
 };
 */
 
-var _settings = [];
+var _settings = [
+  { 
+    name: 'google.analytics',
+    setting: '',
+    type: 'string',
+    description: 'The Google Analytics Property Id for the Web Application',
+    title: 'Google Analytics Id'
+  }
+];
 //var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 //var wlFilter = require('waterline-criteria');
 
@@ -465,7 +473,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback.settings)){
         sails.config.humpback.settings = { };
       }
-      sails.config.humpback.settings = _.merge(sails.config.humpback.settings, _settings);
+      sails.config.humpback.settings = _.union(sails.config.humpback.settings, _settings);
 
       if (!_.isObject(sails.config._modelCache)){
         sails.config._modelCache = { };

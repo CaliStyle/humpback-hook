@@ -50,10 +50,6 @@ module.exports = {
   autoPK: false,
   
   autoCreatedBy: true,
-  
-  autoCreatedAt: true,
-  
-  autoUpdatedAt: true,
 
   reserved: true,
   
@@ -147,7 +143,7 @@ module.exports = {
      */
 		action: {
 			type: 'string',
-			index: true,
+			index: true
       //notNull: true,
 		},
 
