@@ -1,6 +1,11 @@
 /**
- * Authentication Controller
+ * AuthController
+ *
+ * @description :: Server-side logic for managing humpback auth
+ * @humpback-docs  :: https://github.com/CaliStyle/humpback/wiki/Controllers#authcontroller
+ * @help        :: See http://links.sailsjs.org/docs/controllers
  */
+ 
 module.exports = {
 
     /**

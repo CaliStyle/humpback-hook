@@ -473,7 +473,11 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback.settings)){
         sails.config.humpback.settings = { };
       }
-      sails.config.humpback.settings = _.union(sails.config.humpback.settings, _settings);
+      sails.config.humpback.settings = _.extend(sails.config.humpback.settings, _settings);
+
+      if (!_.isObject(sails.config.humpback.settingsClient)){
+        sails.config.humpback.settingsClient = { };
+      }
 
       if (!_.isObject(sails.config._modelCache)){
         sails.config._modelCache = { };

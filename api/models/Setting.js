@@ -67,5 +67,32 @@ module.exports = {
 	    	type: 'boolean',
 	    	defaultsTo: false
 	    }
-	}
+	},
+
+	afterCreate: [
+		function saveSetting(setting, next){
+			sails.log.silly('Setting.afterCreate.saveSetting',setting);
+			sails.config.humpback.settings[setting.name] = setting.setting;
+
+			next();
+		}
+	],
+	afterUpdate: [
+		function saveSetting(setting, next){
+			sails.log.silly('Setting.afterUpdate.saveSetting',setting);
+			sails.config.humpback.settings[setting.name] = setting.setting;
+
+			next();
+		}
+	],
+	afterDestroy: [
+		function removeSetting(setting, next){
+			sails.log.silly('Setting.afterCreate.removeSetting',setting);
+			delete sails.config.humpback.settings[setting.name];
+
+			next();
+		}
+	]
+
+
 };

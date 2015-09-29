@@ -1,4 +1,12 @@
 /**
+* Criteria.js
+*
+* @description    :: 
+* @humpback-docs  :: https://github.com/CaliStyle/humpback/wiki/Models#alert
+* @sails-docs   :: http://sailsjs.org/#!documentation/models
+*/
+
+/**
  * @module Criteria
  *
  * @description
@@ -8,6 +16,7 @@
  * The blacklist is not relevant for delete requests.
  * A where clause uses waterline query syntax to determine if a permission is allowed, ie where: { id: { '>': 5 } }
  */
+
 module.exports = {
   autoCreatedBy: false,
 
