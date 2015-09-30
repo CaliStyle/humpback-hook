@@ -36,6 +36,14 @@ var _settings = [
     type: 'string',
     description: 'The Google Analytics Property Id for the Web Application',
     title: 'Google Analytics Id'
+  },
+  { 
+    name: 'test.secure',
+    setting: '{"test": "test"}',
+    type: 'json',
+    description: 'Test Secure',
+    title: 'Test Secure',
+    secure: true
   }
 ];
 //var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
@@ -470,13 +478,16 @@ module.exports = function (sails) {
       }
       sails.config.humpback.barnacles.core = true;
 
-      if (!_.isObject(sails.config.humpback.settings)){
-        sails.config.humpback.settings = { };
+      if (!_.isArray(sails.config.humpback.settings)){
+        sails.config.humpback.settings = [];
       }
       sails.config.humpback.settings = _.extend(sails.config.humpback.settings, _settings);
 
-      if (!_.isObject(sails.config.humpback.settingsClient)){
-        sails.config.humpback.settingsClient = { };
+      if (!_.isObject(sails.config.humpback.secure)){
+        sails.config.humpback.secure = { };
+      }
+      if (!_.isObject(sails.config.humpback.notsecure)){
+        sails.config.humpback.notsecure = { };
       }
 
       if (!_.isObject(sails.config._modelCache)){

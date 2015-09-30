@@ -4,11 +4,12 @@ module.exports.humpback = {
 	
 	settings: [	
 		{ 
-			name: 'google.analytics',
-			setting: '',
-			type: 'string',
-			description: 'The Google Analytics Property Id for the Web Application',
-			title: 'Google Analytics Id'
+			name: 'test.secure',
+			setting: '{"test": "test"}',
+			type: 'json',
+			description: 'Test Secure',
+			title: 'Test Secure',
+			secure: true
 		}
 	]
 }

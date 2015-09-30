@@ -36,15 +36,8 @@ module.exports = {
   
   policies: {
     UserController: { create: true }
-  },
-
-  humpback: {
-    settings: [
-      {
-        'googleAnalytics' : 'hello'
-      }
-    ]
   }
+  
   /*
   policies: {
     UserController: { create: true, find: true, findOne: true, update: true },
