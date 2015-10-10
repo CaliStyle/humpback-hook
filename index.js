@@ -904,7 +904,7 @@ module.exports = function (sails) {
 				      this.protocols.local.register(req, res, next);
 				    }
 				    else if (action === 'adminreset' && req.user) {
-              this.protocols.local.connect(req, res, next);
+              this.protocols.local.adminreset(req, res, next);
             }
             else if (action === 'connect' && req.user) {
 				      this.protocols.local.connect(req, res, next);
