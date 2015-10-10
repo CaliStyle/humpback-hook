@@ -48,7 +48,8 @@ module.exports = {
 
 	    //The type of setting eg. string, json, array, boolean
 	    type: {
-	    	type: 'string'
+	    	type: 'string',
+	    	enum: ['string','json','boolean','array','date']
 	    },
 
 	    //The description of the settting

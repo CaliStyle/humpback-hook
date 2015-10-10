@@ -351,6 +351,10 @@ module.exports = function (sails) {
         'get /auth/:provider/:action': {
           controller: 'AuthController', 
           action: 'callback'
+        },
+        'get /ping': {
+          controller: 'AuthController', 
+          action: 'ping'
         }
       },
       //humpback-hook added model definitions, can be overriden per model

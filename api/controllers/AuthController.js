@@ -7,6 +7,14 @@
  */
  
 module.exports = {
+    
+    /**
+     * Ping
+     * Allow for a ping, this is useful for load balancer health checks.  at http(s)://<yourdomain>/ping
+     */ 
+    ping: function (req, res) {
+        return res.ok();
+    },
 
     /**
     * Log out a user and return them to the homepage
@@ -88,7 +96,7 @@ module.exports = {
                     res.redirect('/register');
                 }
                 else{
-
+                    res.badRequest(flashError);
                 }
             }
             else if (action === 'login') {
@@ -96,7 +104,7 @@ module.exports = {
                     res.redirect('/login');
                 }
                 else{
-
+                    res.badRequest(flashError);
                 }    
             }
             else if (action === 'disconnect') {
@@ -104,7 +112,7 @@ module.exports = {
                     res.redirect('back');
                 }
                 else{
-
+                    res.badRequest(flashError);
                 }
             }
             else {
