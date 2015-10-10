@@ -903,7 +903,10 @@ module.exports = function (sails) {
 				    if (action === 'register' && !req.user) {
 				      this.protocols.local.register(req, res, next);
 				    }
-				    else if (action === 'connect' && req.user) {
+				    else if (action === 'adminreset' && req.user) {
+              this.protocols.local.connect(req, res, next);
+            }
+            else if (action === 'connect' && req.user) {
 				      this.protocols.local.connect(req, res, next);
 				    }
 				    else if (action === 'disconnect' && req.user) {
