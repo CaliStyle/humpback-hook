@@ -25,23 +25,23 @@ describe('User Controller ::', function () {
   describe('#create()', function () {
 
     describe('http request', function () {
-
-      it('should be able to create new user', function (done) {
+      
+      it('should return redirect to after registration', function (done) {
 
         request(sails.hooks.http.app)
-            .post('/register')
+            .post('/register?next=%2F')
             .send({
               email: 'new.user@email.com',
               password: 'admin123'
             })
-            .expect(200)
+            .expect(302)
             .end(function (err) {
               done(err);
             });
 
       });
 
-      it('should return error if user already exists', function (done) {
+      it('should return 302 and error if user already exists', function (done) {
 
         request(sails.hooks.http.app)
             .post('/register')
@@ -49,7 +49,36 @@ describe('User Controller ::', function () {
               email: 'new.user@email.com',
               password: 'admin123'
             })
+            .expect(302)
+            .end(function (err) {
+              done(err);
+            });
+
+      });
+      it('should return a 500 error', function (done) {
+
+        request(sails.hooks.http.app)
+            .post('/user/create')
+            .send({
+              email: 'new.user@email.com',
+              password: 'admin123'
+            })
             .expect(500)
+            .end(function (err) {
+              done(err);
+            });
+
+      });
+
+      it('should return a user', function (done) {
+
+        request(sails.hooks.http.app)
+            .post('/user/create')
+            .send({
+              email: 'newest.user@email.com',
+              password: 'admin123'
+            })
+            .expect(200)
             .end(function (err) {
               done(err);
             });
@@ -64,7 +93,10 @@ describe('User Controller ::', function () {
 
     it('should be able to create new user', function (done) {
 
-      io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin123' }, function (data, jwres) {
+      io.socket.post('/register', { 
+        email: 'new.socketuser@email.com', 
+        password: 'admin123' 
+      }, function (data, jwres) {
 
         assert.equal(jwres.statusCode, 200);
         done();
@@ -75,9 +107,12 @@ describe('User Controller ::', function () {
 
     it('should return error if user already exists', function (done) {
 
-      io.socket.post('/register', { email: 'new.socketuser@email.com', password: 'admin123' }, function (data, jwres) {
+      io.socket.post('/register', { 
+        email: 'new.socketuser@email.com', 
+        password: 'admin123' 
+      }, function (data, jwres) {
 
-        assert.equal(jwres.statusCode, 500);
+        assert.equal(jwres.statusCode, 400);
         done();
 
       });

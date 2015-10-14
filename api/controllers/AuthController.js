@@ -73,6 +73,7 @@ module.exports = {
             // because we shouldn't expose internal authorization errors to the user.
             // We do return a generic error and the original request body.
             var flashError = req.flash('error')[0];
+            
             if (err || flashError) {
                 sails.log.warn(err);
                 sails.log.warn(flashError);
@@ -84,6 +85,7 @@ module.exports = {
             else if (flashError) {
                 req.flash('error', flashError);
             }
+
             req.flash('form', req.body);
 
             // If an error was thrown, redirect the user to the
@@ -93,7 +95,7 @@ module.exports = {
 
             if (action === 'register') {
                 if (!req.isSocket) {
-                    res.redirect('/register');
+                    res.redirect('back');
                 }
                 else{
                     res.badRequest(flashError);
@@ -101,7 +103,8 @@ module.exports = {
             }
             else if (action === 'login') {
                 if (!req.isSocket) {
-                    res.redirect('/login');
+                    var redirect = req.query.prev ? req.query.prev : 'back';
+                    res.redirect(redirect);
                 }
                 else{
                     res.badRequest(flashError);
@@ -109,7 +112,8 @@ module.exports = {
             }
             else if (action === 'disconnect') {
                 if (!req.isSocket) {
-                    res.redirect('back');
+                    var redirect = req.query.prev ? req.query.prev : 'back';
+                    res.redirect(redirect);
                 }
                 else{
                     res.badRequest(flashError);
