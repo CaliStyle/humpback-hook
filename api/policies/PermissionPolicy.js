@@ -21,8 +21,6 @@
  */
 module.exports = function (req, res, next) {
   
-  //console.log("Permission Policy","DID I RUN?????");
-  
   if (req.options.modelUnlocked) {
     return next();
   }
@@ -40,7 +38,7 @@ module.exports = function (req, res, next) {
   PermissionService
     .findModelPermissions(options)
     .then(function (permissions) {
-      sails.log.silly('PermissionPolicy:', permissions.length, 'permissions grant',
+      sails.log.verbose('PermissionPolicy:', permissions.length, 'permissions grant',
           req.method, 'on', req.model.name, 'for', req.user.username);
 
       if (!permissions || permissions.length === 0) {

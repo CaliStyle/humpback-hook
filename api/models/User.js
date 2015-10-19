@@ -67,20 +67,6 @@ module.exports = {
         /**
          * 
          */
-        firstName: {
-            type: 'string'
-        },
-
-        /**
-         * 
-         */
-        lastName: {
-            type: 'string'
-        },
-
-        /**
-         * 
-         */
         passports: {
             collection: 'Passport',
             via: 'user'
@@ -126,15 +112,17 @@ module.exports = {
      * @param {Function} next
      */
     beforeValidate: [
-        function UserBeforeValidate(values, next){
-      
-            if(values.email && !values.username){
-            var username,
-            find = [".", "@"],
-            replace = ["DOT", "AT"];
+        
+        function setUsername(values, next){
+            sails.log.silly('User.beforeValidate.setUsername', values);
 
-            username = values.email.replaceArray(find, replace);
-            values.username = username; 
+            if(values.email && !values.username){
+                var username,
+                find = [".", "@"],
+                replace = ["DOT", "AT"];
+
+                username = values.email.replaceArray(find, replace);
+                values.username = username; 
             }
             next(null, values);
         }
@@ -148,7 +136,7 @@ module.exports = {
      */
     beforeCreate: [
         function UserBeforeCreate(values, next){
-            next(null, values);
+            next();
         }
     ],
  
@@ -163,7 +151,7 @@ module.exports = {
          * @param {Function} next
          */
         function setOwner (user, next) {
-            sails.log('User.afterCreate.setOwner', user);
+            sails.log.silly('User.afterCreate.setOwner', user);
             User.update({ id: user.id }, { owner: user.id })
                 .then(function (user) {
                 next();
@@ -181,6 +169,7 @@ module.exports = {
          * @param {Function} next
          */
         function attachDefaultRole (user, next) {
+            sails.log.silly('User.attachDefaultRole', user);
             Promise.bind({ }, User.findOne(user.id)
                 .populate('roles')
                 .then(function (user) {
@@ -211,7 +200,7 @@ module.exports = {
     ],
 
     /**
-     * Method to create a user
+     * Backend Method to create a user
      *
      * @param {Object}   user, the user to be registered 
      */
