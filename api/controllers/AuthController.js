@@ -130,13 +130,13 @@ module.exports = {
 
             if (err || !user) {
                 sails.log.warn(err);
-                return _tryAgain();
+                return _tryAgain(err);
             }
 
             req.login(user, function (err) {
                 if (err) {
                     sails.log.warn(err);
-                    return _tryAgain();
+                    return _tryAgain(err);
                 }
 
                 // Upon successful login, send the user to the homepage where req.user

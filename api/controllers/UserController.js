@@ -44,13 +44,13 @@ module.exports = {
     		
 			if (err || !user) {
                 sails.log.warn(err);
-                return _tryAgain();
+                return _tryAgain(err);
             }
             req.login(user, function (err) {
                 
                 if (err) {
                     sails.log.warn(err);
-                    return _tryAgain();
+                    return _tryAgain(err);
                 }
 
 	    		if (!req.isSocket && req.query.next) {
