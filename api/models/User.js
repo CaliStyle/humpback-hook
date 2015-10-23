@@ -30,7 +30,7 @@ module.exports = {
         'registered': {
             'create': {action: false, relation: false},
             'read'  : {action: true,  relation: false},
-            'update': {action: false, relation: 'owner'},
+            'update': {action: true, relation: 'owner'},
             'delete': {action: false, relation: false}    
         },
         'public': {

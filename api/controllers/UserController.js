@@ -35,7 +35,7 @@ module.exports = {
                 res.redirect(redirect);
             }
             else{
-                res.badRequest(flashError);
+                res.badRequest(err);
             }
             
  		}

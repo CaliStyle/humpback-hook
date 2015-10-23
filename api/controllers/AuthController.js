@@ -98,7 +98,7 @@ module.exports = {
                     res.redirect('back');
                 }
                 else{
-                    res.badRequest(flashError);
+                    res.badRequest(err);
                 }
             }
             else if (action === 'login') {
@@ -107,7 +107,7 @@ module.exports = {
                     res.redirect(redirect);
                 }
                 else{
-                    res.badRequest(flashError);
+                    res.badRequest(err);
                 }    
             }
             else if (action === 'disconnect') {
@@ -116,7 +116,7 @@ module.exports = {
                     res.redirect(redirect);
                 }
                 else{
-                    res.badRequest(flashError);
+                    res.badRequest(err);
                 }
             }
             else {
