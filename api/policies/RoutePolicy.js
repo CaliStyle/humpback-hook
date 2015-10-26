@@ -17,14 +17,15 @@ module.exports = function(req, res, next) {
 	//Check if this user has permissions to access the route
 	RouteService.findTargetRoute(req)
 	.then(function (route){
-		console.log("ROUTE", route);
+		sails.log.verbose("ROUTE:", route);
 		
 		if(!route){
 			//Assume that this is handled by Model Permissions
 			//Or that this route is public;
 			return next();
 		}
-
+		
+		next();
 	})
 	.catch(function(err){
 		sails.log(err);
