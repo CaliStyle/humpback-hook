@@ -257,6 +257,9 @@ function _initializeFixtures () {
     })
     .then(function (routes){
       sails.log.silly('humpback-hook: routes', routes);
+      
+      sails.config._routeCache = _.indexBy(routes, 'id');
+
       this.routes = routes;
 
       return require('./lib/permissions/permission').create(this.roles, this.models, this.routes, this.admin);
@@ -325,12 +328,12 @@ module.exports = function (sails) {
         'post /logout': {
           controller: 'AuthController', 
           action: 'logout',
-          defaultPermissions: ['registered']
+          defaultRoles: ['registered']
         },
         'get /logout': {
           controller: 'AuthController', 
           action: 'logout',
-          defaultPermissions: ['registered']
+          defaultRoles: ['registered']
         },
         'post /auth/local': {
           controller: 'AuthController',
@@ -477,6 +480,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
+
       if(!_.isObject(sails.config.humpback.barnacles)){
         sails.config.humpback.barnacles = { };
       }
@@ -490,6 +494,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.humpback.secure)){
         sails.config.humpback.secure = { };
       }
+
       if (!_.isObject(sails.config.humpback.notsecure)){
         sails.config.humpback.notsecure = { };
       }
@@ -497,6 +502,11 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config._modelCache)){
         sails.config._modelCache = { };
       }
+
+      if (!_.isObject(sails.config._routeCache)){
+        sails.config._routeCache = { };
+      }
+
       if (!_.isObject(sails.config._foundationRoutes)){
         sails.config._foundationRoutes = { };
       }

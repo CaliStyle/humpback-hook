@@ -160,10 +160,9 @@ module.exports = {
      * 
      */
     permissions: {
-        collection: 'Permission',
-        via: 'route'
-    }
- 
+      collection: 'Permission',
+      via: 'route'
+    },
 	},
 
   /**

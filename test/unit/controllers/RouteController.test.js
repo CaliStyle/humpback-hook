@@ -51,6 +51,7 @@ describe('Route Controller ::', function () {
 			            .expect(201, function (err, res) {
 
 			            	if (err) {
+			            		console.log(err);
 			                	return done(err);
 			              	}
 
