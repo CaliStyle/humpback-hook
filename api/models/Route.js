@@ -257,7 +257,7 @@ module.exports = {
   afterUpdate: [
     function AfterUpdateCache(route, next){
       Route.findOne(route.id)
-      .populate('roles');
+      .populate('roles')
       .then(function(route){
         sails.config._routeCache[route.id] = route;
         sails.log.verbose('Route.AfterUpdateCache.route', route);
