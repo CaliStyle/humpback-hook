@@ -14,11 +14,11 @@ module.exports = {
    * same request.
    */
     findTargetRoute: function(req) {
-    	
-		var RouteModel = sails.models[sails.config.permission.routeModelIdentity],
+    	var ThisModel = actionUtil.parseModel(req),
+			RouteModel = sails.models[sails.config.permission.routeModelIdentity],
 			verb = req.method.toLowerCase(),
 			uri = req.url,
-	 		pk = new Buffer(verb + ':' + uri).toString('base64'),
+	 		pk = actionUtil.parsePk(req) && ThisModel == RouteModel ? actionUtil.parsePk(req) : new Buffer(verb + ':' + uri).toString('base64'),
 	 		check = new Buffer(pk, 'base64').toString().split(':'),
 	 		routeCache = sails.config._routeCache;
 
@@ -46,12 +46,12 @@ module.exports = {
 				.populate('roles')
 				.then(function(route){
 					if(route){
-						sails.config._routeCache.push(route);
+						sails.config._routeCache[pk] = route;
 					}else{
 						//This route is undefined so it is unlocked.
 						sails.log.verbose("Route routeUnlocked");
 						req.options.routeUnlocked = true;
-						sails.config._routeCache[pk] = ({id: pk});
+						sails.config._routeCache[pk] = {id: pk};
 					}
 					req.options.routeId = pk;
 					req.route = sails.config._routeCache[req.options.routeId];
@@ -70,12 +70,32 @@ module.exports = {
     },
 
 	findUserRouteRoles: function(options) {
-		
-		return User.findOne(options.user.id)
-	      .populate('roles')
-	      .then(function(user) {
-	      	return _.any(options.roles, _.matches(user.roles));
-	      });
+		return new Promise(function(resolve, reject){
+			if(!options.route.roles || options.route.roles.length === 0){
+				sails.log.verbose('RouteService: No Route Roles');
+				return resolve([{name: 'public'}]);
+			}
+			if(!options.user){
+				sails.log.verbose('RouteService: Public User');
+				var userRoles = ['public'];
+				var routeRoles = _.pluck(options.route.roles, 'name');
+				return resolve(_.intersection(routeRoles, userRoles));
+				
+			}
+			User.findOne(options.user.id)
+		    .populate('roles')
+		    .then(function(user) {
+
+		    	var userRoles = _.pluck(user.roles, 'name');
+		    	console.log(userRoles);
+				var routeRoles = _.pluck(options.route.roles, 'name');
+				console.log(routeRoles);
+				return resolve(_.intersection(routeRoles, userRoles));
+		    	//return resolve(_.findByValues(options.route.roles, "name", _.pluck(user.roles, 'name')));
+		      	//resolve(_.any(options.route.roles, _.matches(user.roles)));
+		      	//return resolve(_.any(_.pluck(options.route.roles, 'name'), _.matches(_.pluck(user.roles, 'name'))));
+		    });
+		});
 	},
 
 	/**
@@ -89,9 +109,13 @@ module.exports = {
 	* Build an error message
 	*/
 	getErrorMessage: function(options) {
+		if(!options.user){
+			return [
+				'Unauthenticated User is not permitted to', options.verb, options.route.id
+			].join(' ');
+		}
 		return [
-			'User', options.user.username, 'is not permitted to', options.method, options.route.uri
+			'User', options.user.username, 'is not permitted to', options.verb, options.route.id
 		].join(' ');
-	},
-
+	}
 }
