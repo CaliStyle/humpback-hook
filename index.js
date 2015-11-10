@@ -6,9 +6,6 @@ var Passport = require('passport').constructor;
 var path = require('path');
 var url = require('url');
 var fnv = require('fnv-plus');
-var normalize = module.parent.require('sails/node_modules/waterline/lib/waterline/utils/normalize');
-var _hasOwnProperty = module.parent.require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
-var defer = module.parent.require('sails/node_modules/waterline/lib/waterline/utils/defer');
 var noop = function() {};
 
 /*
@@ -376,6 +373,11 @@ module.exports = function (sails) {
          * @return {[type]}            [description]
         */
         updateOrCreate: function (criteria, values, cb) {
+
+          var normalize = require('sails/node_modules/waterline/lib/waterline/utils/normalize');
+          var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
+          var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
+
           var self = this; 
           var deferred;
 
