@@ -13,7 +13,7 @@ module.exports = function(req, res, next) {
 	
 	RouteService.findTargetRoute(req)
 	.then(function (route){
-		sails.log.verbose("ROUTE:", route);
+		sails.log.verbose('ROUTE:', req.route);
 		
 		if(req.options.routeUnlocked){
 			//Assume that this is handled by Model Permissions
@@ -31,7 +31,11 @@ module.exports = function(req, res, next) {
 	    .then(function (roles) {
 	      sails.log.verbose('RoutePolicy:', roles.length, 'roles grant', req.method, 'on', req.route.uri);
 	      if (!roles || roles.length === 0) {
-	        return res.forbidden({ error: RouteService.getErrorMessage(options) });
+	      	if(req.route.redirect && !req.isSocket){
+	      		return res.redirect(req.route.redirect);
+	      	}else{
+	        	return res.forbidden({ error: RouteService.getErrorMessage(options), redirect: req.route.redirect });
+	        }
 	      }
 
 	      next();

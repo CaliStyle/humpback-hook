@@ -9,16 +9,16 @@ var methodMap = {
 
 module.exports = {
 
-  /**
-   * Find the route performed on, given the
-   * same request.
-   */
+	/**
+	* Find the route performed on, given the
+	* same request.
+	*/
     findTargetRoute: function(req) {
-    	var ThisModel = actionUtil.parseModel(req),
+    	var ThisModel = req.model,
 			RouteModel = sails.models[sails.config.permission.routeModelIdentity],
 			verb = req.method.toLowerCase(),
 			uri = req.url,
-	 		pk = actionUtil.parsePk(req) && ThisModel == RouteModel ? actionUtil.parsePk(req) : new Buffer(verb + ':' + uri).toString('base64'),
+	 		pk = _.isObject(ThisModel) && actionUtil.parsePk(req) && ThisModel == RouteModel ? actionUtil.parsePk(req) : new Buffer(verb + ':' + uri).toString('base64'),
 	 		check = new Buffer(pk, 'base64').toString().split(':'),
 	 		routeCache = sails.config._routeCache;
 
@@ -51,7 +51,10 @@ module.exports = {
 						//This route is undefined so it is unlocked.
 						sails.log.verbose("Route routeUnlocked");
 						req.options.routeUnlocked = true;
-						sails.config._routeCache[pk] = {id: pk};
+						sails.config._routeCache[pk] = {
+							id: pk,
+							
+						};
 					}
 					req.options.routeId = pk;
 					req.route = sails.config._routeCache[req.options.routeId];

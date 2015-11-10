@@ -164,6 +164,10 @@ module.exports = {
       via: 'route'
     },
 
+    //On authorization failure, where does this route redirect?
+    redirect: {
+      type: 'text'
+    }
  
 	},
 
@@ -251,6 +255,16 @@ module.exports = {
         })
 
       );
+    },
+
+    function AfterCreateUpdateCache (route, next){
+      Route.findOne(route.id)
+      .populate('roles')
+      .then(function(route){
+        sails.config._routeCache[route.id] = route;
+        sails.log.verbose('Route.AfterCreateUpdateCache', route);
+        next();
+      });
     }
   ],
 
