@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var actionUtil = require.main.require('sails/lib/hooks/blueprints/actionUtil');
+var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 var methodMap = {
   POST: 'create',
