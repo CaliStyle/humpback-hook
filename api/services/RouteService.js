@@ -1,4 +1,5 @@
-var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
+var Promise = require('bluebird');
+var actionUtil = require.main.require('sails/lib/hooks/blueprints/actionUtil');
 
 var methodMap = {
   POST: 'create',
@@ -52,8 +53,7 @@ module.exports = {
 						sails.log.verbose("Route routeUnlocked");
 						req.options.routeUnlocked = true;
 						sails.config._routeCache[pk] = {
-							id: pk,
-							
+							id: pk
 						};
 					}
 					req.options.routeId = pk;

@@ -34,7 +34,7 @@ module.exports = function(req, res, next) {
 	      	if(req.route.redirect && !req.isSocket){
 	      		return res.redirect(req.route.redirect);
 	      	}else{
-	        	return res.forbidden({ error: RouteService.getErrorMessage(options), redirect: req.route.redirect });
+	        	return res.forbidden({ error: RouteService.getErrorMessage(options)});
 	        }
 	      }
 
