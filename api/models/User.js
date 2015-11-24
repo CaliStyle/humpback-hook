@@ -127,6 +127,22 @@ module.exports = {
             next(null, values);
         }
     ],
+
+    afterValidate: [
+        function updatePassword(values, next) {
+            // Update the passport password if it was passed in
+            if(values.password && this.user && this.user.id) {
+              Passport.update({user: this.user.id, protocol: 'local'}, {password: values.password})
+              .exec(function(err, passport) {
+                delete values.password;
+                next(err);
+              });
+            }
+            else {
+              next();
+            }
+        }
+    ],
     
     /**
      * Callback to be run before creating a User.
