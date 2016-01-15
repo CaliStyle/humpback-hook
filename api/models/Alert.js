@@ -111,7 +111,7 @@ module.exports = {
 		},
 
 		/**
-         * These are roles that a user must have to see the alert
+         * These are roles that a user must have to see the alert if Global
          */
 		roles: {
 			collection: 'Role',

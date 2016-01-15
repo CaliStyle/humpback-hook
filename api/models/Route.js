@@ -77,8 +77,8 @@ module.exports = {
     id: {
         type: 'string',
         primaryKey: true,
-        required: true,
-        index: true
+        required: true
+        //,index: true
     },
 
     /**
@@ -100,8 +100,8 @@ module.exports = {
      */
 		address: {
 			type: 'string',
-			required: true,
-      index: true
+			required: true
+      //,index: true
 		},
 
     /**
@@ -109,9 +109,9 @@ module.exports = {
      *                 ^^^^^^target^^^^^^^
      */
     target: {
-      type: 'json',
-      //required: true,
-      index: true
+      type: 'json'
+      //,required: true,
+      //index: true
     },
 
     /**
@@ -133,8 +133,8 @@ module.exports = {
      * The controller
      */
     controller: {
-        type: 'string',
-        index: true,
+        type: 'string'
+        //,index: true,
         //notNull: true
     },
 
@@ -142,8 +142,8 @@ module.exports = {
      * the controller action to apply policy too
      */
 		action: {
-			type: 'string',
-			index: true
+			type: 'string'
+      //,index: true
       //notNull: true,
 		},
 

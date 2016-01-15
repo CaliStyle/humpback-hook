@@ -49,7 +49,7 @@ module.exports = {
             type: 'string',
             unique: true,
             required: true, // We need some kind of unique identifier, since not all providers have a email, this is the way to go.
-            index: true, //Waterline can not index a String as v0.10.0
+            //index: true, //Waterline can not index a String as v0.10.0
             //notNull: true
         },
 
@@ -60,7 +60,7 @@ module.exports = {
             type: 'email',
             unique: true,
             //required: true, //Not all providers return an email, here's looking at you twitter!
-            index: true, //Waterline can not index a String as v0.10.0
+            //index: true, //Waterline can not index a String as v0.10.0
             //notNull: true //Not all providers return an email, here's looking at you twitter!
         },
 

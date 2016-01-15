@@ -17,8 +17,6 @@ module.exports = function OwnerPolicy (req, res, next) {
     return res.forbidden({ error: 'Authenticiation Required' });
     //return res.send(500, new Error('req.user is not set'));
   }
-
-  //console.log("OWNER Policy","DID I MAKE IT HERE?????");
   
   sails.log.verbose('OwnerPolicy user', req.user);
   sails.log.verbose('OwnerPolicy method', req.method);

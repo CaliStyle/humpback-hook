@@ -38,16 +38,16 @@ module.exports = {
          * The Model that this Permission applies to.
          */
         model: {
-            model: 'Model',
-            //required: true
+            model: 'Model'
+            //,required: true
         },
 
         /**
          * The Route that this Permission applies to.
          */
         route: {
-            model: 'Route',
-            //required: true
+            model: 'Route'
+            //,required: true
         },
 
         /**
@@ -58,8 +58,8 @@ module.exports = {
          */
         object: {
             type: 'integer',
-            defaultsTo: -1,
-            index: true
+            defaultsTo: -1
+            //,index: true
         },
 
         /**
@@ -71,8 +71,8 @@ module.exports = {
          */
         attributes: {
             type: 'array',
-            defaultsTo: ['*'],
-            index: true
+            defaultsTo: ['*']
+            //,index: true
         },
 
         /**
@@ -82,7 +82,7 @@ module.exports = {
          */
         action: {
             type: 'string',
-            index: true,
+            //index: true,
             notNull: true
           
           /**
@@ -106,8 +106,8 @@ module.exports = {
                 'owner',
                 'user'
             ],
-            defaultsTo: 'role',
-            index: true
+            defaultsTo: 'role'
+            //,index: true
         },
 
         /**
