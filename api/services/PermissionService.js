@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var methodMap = {
   POST: 'create',
   GET: 'read',
+  HEAD: 'read',
   PUT: 'update',
   DELETE: 'delete'
 };
