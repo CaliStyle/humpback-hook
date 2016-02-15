@@ -19,7 +19,7 @@ module.exports = {
 			RouteModel = sails.models[sails.config.permission.routeModelIdentity],
 			verb = req.method.toLowerCase(),
 			uri = req.url,
-	 		pk = _.isObject(ThisModel) && actionUtil.parsePk(req) && ThisModel == RouteModel ? actionUtil.parsePk(req) : new Buffer(verb + ':' + uri).toString('base64'),
+	 		pk = _.isObject(ThisModel) && actionUtil.parsePk(req) && ThisModel.identity == RouteModel.identity ? actionUtil.parsePk(req) : new Buffer(verb + ':' + uri).toString('base64'),
 	 		check = new Buffer(pk, 'base64').toString().split(':'),
 	 		routeCache = sails.config._routeCache;
 
