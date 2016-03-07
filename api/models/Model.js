@@ -56,6 +56,20 @@ module.exports = {
         /**
          * 
          */
+        private: {
+            type: 'boolean'
+        },
+
+        /**
+         * 
+         */
+        description: {
+            type: 'string'
+        },
+
+        /**
+         * 
+         */
         attributes: {
             type: 'json'
         },
@@ -64,8 +78,9 @@ module.exports = {
          * 
          */
         permissions: {
-            collection: 'Permission',
-            via: 'model'
+            //collection: 'Permission',
+            //via: 'model'
+            type: 'json'
         }
     }
 };
