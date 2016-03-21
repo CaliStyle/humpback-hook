@@ -130,18 +130,33 @@ module.exports = {
 
     afterValidate: [
         function updatePassword(values, next) {
-            // Update the passport password if it was passed in
-            if(values.password && this.user && this.user.id) {
-              Passport.update({user: this.user.id, protocol: 'local'}, {password: values.password})
-              .exec(function(err, passport) {
-                delete values.password;
-                next(err);
+      // Update the passport password if it was passed in
+      if (values.password && values.id) {
+        Passport
+          .findOne({user: values.id, protocol: 'local'})
+          .then(function (rec) {
+            if (!rec) {
+              return Passport.create({
+                user: values.id,
+                protocol: 'local',
+                password: values.password
               });
             }
-            else {
+            return Passport
+              .update({user: values.id, protocol: 'local'}, {password: values.password});
+          })
+          .then(function (passport) {
+              delete values.password;
               next();
-            }
-        }
+          })
+          .catch(function (err) {
+            next(err);
+          });
+      }
+      else {
+        next();
+      }
+    }
     ],
     
     /**
