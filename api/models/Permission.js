@@ -7,8 +7,8 @@
 */
 
 module.exports = {
-  
-    autoCreatedBy: false,
+
+    autoCreatedBy: true,
 
     description: [
         'Defines a particular `action` that a `Role` can perform on a `Model`.',
@@ -22,7 +22,7 @@ module.exports = {
             'create': {action: false, relation: false},
             'read'  : {action: true,  relation: false},
             'update': {action: false, relation: false},
-            'delete': {action: false, relation: false}    
+            'delete': {action: false, relation: false}
         },
         'public': {
             'create': {action: false, relation: false},
@@ -66,7 +66,7 @@ module.exports = {
          * If permission describes a Model,
          * attributes of model that this Permission governs.
          *
-         * '*' wildcard is allowed and the default, 
+         * '*' wildcard is allowed and the default,
          * else only access to specified attributes
          */
         attributes: {
@@ -84,7 +84,7 @@ module.exports = {
             type: 'string',
             //index: true,
             notNull: true
-          
+
           /**
            * TODO remove enum and support permissions based on all controller
            * actions, including custom ones
@@ -118,7 +118,7 @@ module.exports = {
             model: 'Role',
             required: true
         },
-        
+
         /**
          * The User to which this Permission grants create, read, update, and/or
          * delete privileges.

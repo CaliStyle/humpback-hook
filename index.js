@@ -22,19 +22,19 @@ var _policies = {
   ],
   AuthController: {
     '*': []
-  }  
+  }
 };
 */
 
 var _settings = [
-  { 
+  {
     name: 'google.analytics',
     setting: '',
     type: 'string',
     description: 'The Google Analytics Property Id for the Web Application',
     title: 'Google Analytics Id'
   },
-  { 
+  {
     name: 'test.secure',
     setting: '{"test": "test"}',
     type: 'json',
@@ -79,7 +79,7 @@ function _extendReq(req) {
    */
   req.login = req.logIn = function(user, options, done) {
     var property, session;
-    
+
     if (typeof options === 'function') {
       done = options;
       options = {};
@@ -96,11 +96,11 @@ function _extendReq(req) {
     if (!session) {
     	return done && done();
     }
-    if (!req._passport) { 
-    	throw new Error('passport.initialize() middleware not in use'); 
+    if (!req._passport) {
+    	throw new Error('passport.initialize() middleware not in use');
     }
-    if (typeof done !== 'function') { 
-    	throw new Error('req#login requires a callback function'); 
+    if (typeof done !== 'function') {
+    	throw new Error('req#login requires a callback function');
     }
 
     req._passport.instance.serializeUser(user, req, function(err, obj) {
@@ -190,8 +190,7 @@ function _installModelOwnership (models) {
     _.defaults(model.attributes, {
       createdBy: {
         model: 'User',
-        index: true,
-        notNull: true
+        index: true
       },
       owner: {
         model: 'User',
@@ -210,7 +209,7 @@ function _initializeFixtures () {
   return require('./lib/permissions/model').createModels()
     .bind({ })
     .then(function (models) {
-      
+
     	if(models.length === 0){
     		var err = new Error();
 		    err.code = 'E_HOOK_INITIALIZE';
@@ -218,7 +217,7 @@ function _initializeFixtures () {
 		    err.message = 'humpback-hook: failed to create models';
 		    return err;
     	}
-      
+
       sails.config._modelCache = _.indexBy(models, 'identity');
 
       this.models = models;
@@ -241,7 +240,7 @@ function _initializeFixtures () {
 		    err.message = 'humpback-hook: failed to create admin';
 		    return err;
     	}
-      
+
       user.createdBy = user.id;
       user.owner = user.id;
       return user.save();
@@ -254,7 +253,7 @@ function _initializeFixtures () {
     })
     .then(function (routes){
       sails.log.silly('humpback-hook: routes', routes);
-      
+
       sails.config._routeCache = _.indexBy(routes, 'id');
 
       this.routes = routes;
@@ -286,15 +285,15 @@ function _initializeSettings () {
 }
 
 /**
- * 
- * 
+ *
+ *
  */
 
 module.exports = function (sails) {
- 	return { 
-    
-    
- 		
+ 	return {
+
+
+
     defaults: {
 
       // Defaults to look for a model w/ identity
@@ -316,19 +315,19 @@ module.exports = function (sails) {
 
       //humpback-hook added routes
       //Admins have permissions to all routes by default,
-      //If no defaultPermissions are set, they are considered public  
+      //If no defaultPermissions are set, they are considered public
       routes : {
-        'post /register': { 
-          controller: 'UserController', 
+        'post /register': {
+          controller: 'UserController',
           action: 'register'
         },
         'post /logout': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'logout',
           defaultRoles: ['registered']
         },
         'get /logout': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'logout',
           defaultRoles: ['registered']
         },
@@ -337,23 +336,23 @@ module.exports = function (sails) {
           action: 'callback'
         },
         'post /auth/local/:action': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'callback'
         },
         'get /auth/:provider': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'provider'
         },
         'get /auth/:provider/callback': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'callback'
         },
         'get /auth/:provider/:action': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'callback'
         },
         'get /ping': {
-          controller: 'AuthController', 
+          controller: 'AuthController',
           action: 'ping'
         }
       },
@@ -378,7 +377,7 @@ module.exports = function (sails) {
           var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
           var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
 
-          var self = this; 
+          var self = this;
           var deferred;
 
           // Normalize Arguments
@@ -386,7 +385,7 @@ module.exports = function (sails) {
              deferred = defer();
           }
           cb = cb || noop;
-          
+
           criteria = normalize.criteria(criteria);
 
           if (criteria === false) {
@@ -414,7 +413,7 @@ module.exports = function (sails) {
               }
             return cb(new Error(errFind));
           }
-          if(!_hasOwnProperty(self.adapter.dictionary, 'update')){ 
+          if(!_hasOwnProperty(self.adapter.dictionary, 'update')){
             if(deferred) {
                 deferred.reject(errUpdate);
               }
@@ -429,7 +428,7 @@ module.exports = function (sails) {
 
           var connNameFind = self.adapter.dictionary.find;
           var adapterFind = self.adapter.connections[connNameFind]._adapter;
-          
+
           var connNameUpdate = self.adapter.dictionary.update;
           var adapterUpdate = self.adapter.connections[connNameUpdate]._adapter;
 
@@ -437,12 +436,16 @@ module.exports = function (sails) {
           var adapterCreate = self.adapter.connections[connNameCreate]._adapter;
 
           adapterFind.find(connNameFind, self.adapter.collection, criteria, normalize.callback(function before (err, results){
-            
+
             if (err) {
               if(deferred) {
                 deferred.reject(err);
               }
               return cb(err);
+            }
+
+            if (criteria.sort) {
+              delete criteria.sort;
             }
 
             if(results && results.length > 0){
@@ -469,7 +472,7 @@ module.exports = function (sails) {
               }));
             }
           }));
-            
+
           if(deferred) {
             return deferred.promise;
           }
@@ -478,7 +481,7 @@ module.exports = function (sails) {
     },
 
 		configure: function () {
-      
+
       if (!_.isObject(sails.config.humpback)){
       	sails.config.humpback = { };
       }
@@ -517,7 +520,7 @@ module.exports = function (sails) {
       if (!_.isObject(sails.config.policies)){
         sails.config.policies = { };
       }
-      
+
       sails.config.policies = _.merge(sails.config.policies, _policies);
       */
 
@@ -531,7 +534,7 @@ module.exports = function (sails) {
       //global.PermissionService = require('./lib/services/permission');
 
       //this.models = models;
-     
+
     },
 		initialize: function (next) {
 			var err, eventsToWaitFor = [];
@@ -566,7 +569,7 @@ module.exports = function (sails) {
       }
 
       //wait for policies hook to be loaded
-      
+
       if (sails.hooks.policies) {
         eventsToWaitFor.push('hook:policies:bound');
       }else{
@@ -577,7 +580,7 @@ module.exports = function (sails) {
         return next(err);
       }
       */
-      
+
       //wait for router to be loaded
       /*
       if (sails.router) {
@@ -603,9 +606,12 @@ module.exports = function (sails) {
       }
       */
 
+      // Install Model Ownership rights
+      _installModelOwnership(sails.models);
+
 			//apply validation hook
       sails.after(eventsToWaitFor, function() {
-        
+
         // Look up configured user model
         var UserModel = sails.models[sails.config.humpback.userModelIdentity],
         		SettingModel = sails.models[sails.config.humpback.settingModelIdentity],
@@ -615,7 +621,7 @@ module.exports = function (sails) {
        			RoleModel = sails.models[sails.config.permission.roleModelIdentity],
             RequestLogModel = sails.models[sails.config.permission.requestlogModelIdentity],
             RouteModel = sails.models[sails.config.permission.routeModelIdentity];
-        		
+
         //bind custom errors logic
         if (!UserModel) {
           err = new Error();
@@ -924,7 +930,7 @@ module.exports = function (sails) {
 				    }
 				    else if (action === 'disconnect' && req.user) {
 				      this.protocols.local.disconnect(req, res, next);
-				    }    
+				    }
 				    else {
 				      next(new Error('Invalid action'));
 				    }
@@ -1016,7 +1022,7 @@ module.exports = function (sails) {
 				    }
 				  });
 				};
- 
+
         // Load passport strategies
         sails.passport.loadStrategies();
 
@@ -1060,20 +1066,16 @@ module.exports = function (sails) {
           });
         });
 
-        
+
 
 
 				/**
-				 * - Install Ownership Rights
-				 * - Create Admin if nessecary	
+				 * - Create Admin if nessecary
 				 */
-
-				// Install Model Ownership rights
-				_installModelOwnership(sails.models);
 
 				Promise.bind({}, ModelModel.count()
           .then(function (count) {
-            if (count === sails.models.length){ 
+            if (count === sails.models.length){
             	return;
             }
 
@@ -1109,7 +1111,7 @@ module.exports = function (sails) {
         'all /*': [
           //intercept all request and bundle passport onto it
           function passport (req, res, next) {
-       			
+
             //Extend the request with additional passport options and Request Entries
             req = _extendReq(req);
 
@@ -1123,18 +1125,18 @@ module.exports = function (sails) {
                 if (err) {
                 	return res.negotiate(err);
                 }
-                
+
                 //Move onto the next policies
                 next();
 
               });
             });
           },
-          
+
           // Remote Authorization from Header
           function allowRemoteAuthorization (req, res, next){
             var auth, authString, username, password;
-            
+
             auth = req.headers.authorization;
             if (!auth || auth.search('Basic ') !== 0) {
               return next();
@@ -1172,4 +1174,3 @@ module.exports = function (sails) {
     }
 	};
 };
-
