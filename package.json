@@ -43,7 +43,7 @@
     "waterline-criteria": "^0.11.1"
   },
   "devDependencies": {
-    "lodash": ">2.4.0",
+    "lodash": "~2.4.0",
     "chai": "^2.0.0",
     "faker": "^2.1.2",
     "grunt": "^0.4.5",
