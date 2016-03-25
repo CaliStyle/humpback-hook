@@ -13,9 +13,9 @@ module.exports = {
   
     autoCreatedBy: false,
   
-    autoCreatedAt: false,
+    autoCreatedAt: true,
   
-    autoUpdatedAt: false,
+    autoUpdatedAt: true,
 
     reserved: true,
     
