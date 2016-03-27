@@ -373,9 +373,9 @@ module.exports = function (sails) {
                  */
                 updateOrCreate: function (criteria, values, cb) {
 
-                    var normalize = require('sails/node_modules/waterline/lib/waterline/utils/normalize');
+                    var normalize = require('waterline/lib/waterline/utils/normalize');
                     //var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
-                    var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
+                    var defer = require('waterline/lib/waterline/utils/defer');
 
                     var self = this;
                     var deferred;
