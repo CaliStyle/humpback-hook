@@ -238,7 +238,6 @@ function _initializeFixtures() {
                 return err;
             }
 
-            user.createdBy = user.id;
             user.owner = user.id;
             return user.save();
         })
