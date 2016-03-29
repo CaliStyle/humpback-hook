@@ -1,5 +1,4 @@
 /**
- * TODO - this is setting createdBy, not owner.
  * The comment below, and the name of this file/function is confusing to me
  * Ensure that the 'owner' property of an Object is set upon creation.
  */
@@ -30,7 +29,6 @@ module.exports = function OwnerPolicy (req, res, next) {
 
   if ('POST' == req.method) {
     //req.body || (req.body = { });
-    req.body.createdBy = req.user.id;
     req.body.owner = req.user.id;
   }
 

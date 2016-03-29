@@ -218,8 +218,7 @@ module.exports = {
               this.permissions.push({
                   route: route.id,
                   action: route.verb,
-                  role: adminRole.id,
-                  createdBy: route.createdBy  
+                  role: adminRole.id
               });
 
               _.remove(this.roles, {
@@ -233,7 +232,7 @@ module.exports = {
                     route: route.id,
                     action: route.verb,
                     role: role.id,
-                    createdBy: route.createdBy
+                    owner: route.owner
                   });
 
                 }
