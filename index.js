@@ -189,10 +189,6 @@ function _installModelOwnership(models) {
         }
 
         _.defaults(model.attributes, {
-            createdBy: {
-                model: 'User',
-                index: true
-            },
             owner: {
                 model: 'User',
                 index: true
@@ -359,8 +355,9 @@ module.exports = function (sails) {
             //humpback-hook added model definitions, can be overriden per model
             models: {
 
-                autoCreatedBy: true,
+                autoCreatedBy: false,
                 dynamicFinders: false,
+                associationFinders: false,
                 reserved: false,
                 private: false,
 
