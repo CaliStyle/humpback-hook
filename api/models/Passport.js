@@ -68,6 +68,9 @@ module.exports = {
         }
     },
 
+    autoCreatedBy: false,
+
+
     attributes: {
         // Required field: Protocol
         //
