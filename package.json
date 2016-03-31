@@ -1,6 +1,6 @@
 {
   "name": "humpback-hook",
-  "version": "0.11.62",
+  "version": "0.11.64",
   "description": "Humpback Core Hook",
   "main": "index.js",
   "sails": {
@@ -38,7 +38,7 @@
     "fnv-plus": "^1.2.12",
     "passport": "^0.2.1",
     "pluralize": "^1.1.4",
-    "sails": "^0.11.0",
+    "sails": "^0.12.0",
     "sails-disk": "^0.10.7",
     "waterline": "^0.12.1",
     "waterline-criteria": "^0.11.1"
