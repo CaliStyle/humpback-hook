@@ -63,10 +63,12 @@ module.exports = {
 						req.options.routeUnlocked = true;
 					}
 					resolve(req.route);
+					return null;
 				})
 				.catch(function(e){
 					sails.log.error(e);
 					resolve({});
+					return null;
 				});
 			}
 		});
