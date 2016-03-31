@@ -1,6 +1,6 @@
 {
   "name": "humpback-hook",
-  "version": "0.11.65",
+  "version": "0.11.66",
   "description": "Humpback Core Hook",
   "main": "index.js",
   "sails": {
