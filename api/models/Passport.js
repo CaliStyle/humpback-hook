@@ -68,6 +68,9 @@ module.exports = {
         }
     },
 
+    autoCreatedBy: false,
+
+
     attributes: {
         // Required field: Protocol
         //
@@ -129,6 +132,8 @@ module.exports = {
          * @param {Function} next
          */
         validatePassword: function (password, next) {
+            if (!this.password) 
+                this.password = '';
             bcrypt.compare(password, this.password, next);
         }
 

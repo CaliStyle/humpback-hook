@@ -1,6 +1,6 @@
 {
   "name": "humpback-hook",
-  "version": "0.11.54",
+  "version": "0.11.62",
   "description": "Humpback Core Hook",
   "main": "index.js",
   "sails": {
@@ -40,6 +40,7 @@
     "pluralize": "^1.1.4",
     "sails": "^0.11.0",
     "sails-disk": "^0.10.7",
+    "waterline": "^0.12.1",
     "waterline-criteria": "^0.11.1"
   },
   "devDependencies": {

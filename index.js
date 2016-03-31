@@ -189,10 +189,6 @@ function _installModelOwnership(models) {
         }
 
         _.defaults(model.attributes, {
-            createdBy: {
-                model: 'User',
-                index: true
-            },
             owner: {
                 model: 'User',
                 index: true
@@ -242,7 +238,6 @@ function _initializeFixtures() {
                 return err;
             }
 
-            user.createdBy = user.id;
             user.owner = user.id;
             return user.save();
         })
@@ -359,8 +354,9 @@ module.exports = function (sails) {
             //humpback-hook added model definitions, can be overriden per model
             models: {
 
-                autoCreatedBy: true,
+                autoCreatedBy: false,
                 dynamicFinders: false,
+                associationFinders: false,
                 reserved: false,
                 private: false,
 
@@ -373,9 +369,9 @@ module.exports = function (sails) {
                  */
                 updateOrCreate: function (criteria, values, cb) {
 
-                    var normalize = require('sails/node_modules/waterline/lib/waterline/utils/normalize');
-                    var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
-                    var defer = require('sails/node_modules/waterline/lib/waterline/utils/defer');
+                    var normalize = require('waterline/lib/waterline/utils/normalize');
+                    //var _hasOwnProperty = require('sails/node_modules/waterline/lib/waterline/utils/helpers').object.hasOwnProperty;
+                    var defer = require('waterline/lib/waterline/utils/defer');
 
                     var self = this;
                     var deferred;
