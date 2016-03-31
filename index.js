@@ -239,11 +239,12 @@ function _initializeFixtures() {
             }
 
             user.owner = user.id;
+            this.admin = user; // in sails.js 0.12 it wouldn't return record after save
+
             return user.save();
         })
-        .then(function (admin) {
-            sails.log.silly('humpback-hook: admin user:', admin);
-            this.admin = admin;
+        .then(function () {
+            sails.log.silly('humpback-hook: admin user:', this.admin);
 
             return require('./lib/permissions/route').createRoutes(this.roles, this.models, this.admin);
         })
