@@ -297,7 +297,7 @@ module.exports = {
    * @param rolename {string} - the name of the role that the users should be added to
    */
   addUsersToRole: function(usernames, rolename) {
-    
+
     if (_.isEmpty(usernames)) {
       return Promise.reject(new Error('One or more usernames must be provided'));
     }
@@ -313,7 +313,7 @@ module.exports = {
         username: usernames
       }).then(function(users) {
         role.users.add(_.pluck(users, 'id'));
-        return role.save();
+        return role.save().then(function () { return role; });
       });
     });
   },
@@ -346,7 +346,7 @@ module.exports = {
           users.map(function(users) {
             role.users.remove(user.id);
           });
-          return role.save();
+          return role.save().then(function () { return role; });
         });
       });
   },

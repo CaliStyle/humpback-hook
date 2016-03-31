@@ -24,14 +24,14 @@ module.exports = {
     description: 'Represents a User.',
 
     reserved: true,
-    
+
     //Global Permissions override all local permissions
     permissions: {
         'registered': {
             'create': {action: false, relation: false},
             'read'  : {action: true,  relation: false},
             'update': {action: true, relation: 'owner'},
-            'delete': {action: false, relation: false}    
+            'delete': {action: false, relation: false}
         },
         'public': {
             'create': {action: false, relation: false},
@@ -43,7 +43,7 @@ module.exports = {
 
     attributes: {
         /**
-         * 
+         *
          */
         username: {
             type: 'string',
@@ -54,7 +54,7 @@ module.exports = {
         },
 
         /**
-         * 
+         *
          */
         email: {
             type: 'email',
@@ -65,7 +65,7 @@ module.exports = {
         },
 
         /**
-         * 
+         *
          */
         passports: {
             collection: 'Passport',
@@ -73,7 +73,7 @@ module.exports = {
         },
 
         /**
-         * 
+         *
          */
         roles: {
             collection: 'Role',
@@ -82,7 +82,7 @@ module.exports = {
         },
 
         /**
-         * 
+         *
          */
         getGravatarUrl: function () {
             if(this.email){
@@ -95,7 +95,7 @@ module.exports = {
         },
 
         /**
-         * 
+         *
          */
         toJSON: function () {
             var user = this.toObject();
@@ -112,7 +112,7 @@ module.exports = {
      * @param {Function} next
      */
     beforeValidate: [
-        
+
         function setUsername(values, next){
             sails.log.silly('User.beforeValidate.setUsername', values);
 
@@ -122,7 +122,7 @@ module.exports = {
                 replace = ["DOT", "AT"];
 
                 username = values.email.replaceArray(find, replace);
-                values.username = username; 
+                values.username = username;
             }
             next(null, values);
         }
@@ -158,7 +158,7 @@ module.exports = {
       }
     }
     ],
-    
+
     /**
      * Callback to be run before creating a User.
      *
@@ -170,7 +170,7 @@ module.exports = {
             next();
         }
     ],
- 
+
     /**
      * Attach default Role to a new User
      */
@@ -208,7 +208,7 @@ module.exports = {
                     return Role.findOne({ name: 'registered' });
                 })
                 .then(function (role) {
-                    
+
                     var registered = _.some(this.user.roles, function (userRole) {
                         return userRole.id === role.id;
                     });
@@ -218,7 +218,7 @@ module.exports = {
                     }
                     return this.user.save();
                 })
-                .then(function (updatedUser) {
+                .then(function () {
                     sails.log.silly('role "registered" attached to user', this.user.username);
                     next();
                 })
@@ -233,7 +233,7 @@ module.exports = {
     /**
      * Backend Method to create a user
      *
-     * @param {Object}   user, the user to be registered 
+     * @param {Object}   user, the user to be registered
      */
     register: function (user) {
         return new Promise(function (resolve, reject) {

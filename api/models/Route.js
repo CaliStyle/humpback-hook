@@ -206,7 +206,7 @@ module.exports = {
   afterCreate: [
     function AfterCreateGrantPermissions (route, next){
       sails.log.verbose('Route.AfterCreateGrantPermissions.route', route);
-      Promise.bind({ }, Role.find()
+      Role.find()
         .then(function (roles) {
           this.roles = roles;
           this.permissions = [];
@@ -250,10 +250,8 @@ module.exports = {
         })
         .catch(function(e) {
             sails.log.error(e);
-            next(e);
-        })
-
-      );
+            return next(e);
+        });
     },
 
     function AfterCreateUpdateCache (route, next){
@@ -262,7 +260,8 @@ module.exports = {
       .then(function(route){
         sails.config._routeCache[route.id] = route;
         sails.log.verbose('Route.AfterCreateUpdateCache', route);
-        next();
+
+        return next();
       });
     }
   ],
@@ -274,7 +273,7 @@ module.exports = {
       .then(function(route){
         sails.config._routeCache[route.id] = route;
         sails.log.verbose('Route.AfterUpdateCache.route', route);
-        next();
+        return next();
       });
     }
   ]
