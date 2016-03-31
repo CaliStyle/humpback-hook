@@ -8,13 +8,13 @@
  */
 
 module.exports = function(req, res, next) {
-	
+
 	//Check if this user has the role to access the route
-	
+
 	RouteService.findTargetRoute(req)
 	.then(function (route){
 		sails.log.verbose('ROUTE:', req.route);
-		
+
 		if(req.options.routeUnlocked){
 			//Assume that this is handled by Model Permissions
 			//Or that this route is public;
@@ -39,7 +39,8 @@ module.exports = function(req, res, next) {
 	      }
 
 	      next();
+				return null;
 	    });
 	});
-	
+
 }

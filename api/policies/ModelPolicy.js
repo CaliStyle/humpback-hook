@@ -4,7 +4,7 @@ var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
  * Query the Model that is being acted upon, and set it on the req object.
  */
 module.exports = function ModelPolicy (req, res, next) {
-  
+
   var modelCache = sails.config._modelCache;
   req.options.modelIdentity = actionUtil.parseModel(req).identity;
 
@@ -16,9 +16,9 @@ module.exports = function ModelPolicy (req, res, next) {
   req.model = modelCache[req.options.modelIdentity];
 
   if (_.isObject(req.model) && !_.isNull(req.model.id)) {
-    
+
     if(_.isObject(req.model.permissions) && _.isObject(req.model.permissions.public)){
-      
+
       var method = PermissionService.getMethod(req.method);
 
       //console.log(req.model.permissions.public, method);
@@ -49,7 +49,7 @@ module.exports = function ModelPolicy (req, res, next) {
 
       req.model = model;
       next();
+      return null;
     })
     .catch(next);
 };
-

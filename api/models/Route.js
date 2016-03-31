@@ -1,7 +1,7 @@
 /**
 * Route.js
 *
-* @description    :: Stores the Route 
+* @description    :: Stores the Route
 * @humpback-docs  :: https://github.com/CaliStyle/humpback/wiki/Models#route
 * @sails-docs     :: http://sailsjs.org/#!documentation/models
 */
@@ -30,7 +30,7 @@ function _makeTargetObject(target){
   }
   var object = {};
   var peices = target.split('.');
-  
+
   if(peices.length > 1){
     object.controller = peices[0];
     object.action = peices[1];
@@ -39,7 +39,7 @@ function _makeTargetObject(target){
 }
 
 module.exports = {
-	
+
 	description: [
     'Defines a particular route `action` that a `Role` can access.',
     'A `User` can navigate to  a route `action` by having a `Role` which',
@@ -48,18 +48,18 @@ module.exports = {
   ].join(' '),
 
   autoPK: false,
-  
+
   autoCreatedBy: true,
 
   reserved: true,
-  
+
   //Global Permissions override all local permissions
   permissions: {
     'registered': {
       'create': {action: false,	relation: false},
       'read' 	: {action: true,	relation: false},
       'update': {action: false,	relation: false},
-      'delete': {action: false,	relation: false}		
+      'delete': {action: false,	relation: false}
     },
     'public': {
       'create': {action: false,	relation: false},
@@ -70,7 +70,7 @@ module.exports = {
   },
 
 	attributes: {
-  		
+
     /**
      * base encoded verb:URI of this route
      */
@@ -148,7 +148,7 @@ module.exports = {
 		},
 
 		/**
-       * 
+       *
        */
 		roles: {
     	collection: 'Role',
@@ -157,7 +157,7 @@ module.exports = {
     },
 
     /**
-     * 
+     *
      */
     permissions: {
       collection: 'Permission',
@@ -168,7 +168,7 @@ module.exports = {
     redirect: {
       type: 'text'
     }
- 
+
 	},
 
   /**
@@ -193,7 +193,7 @@ module.exports = {
      * Create the ID;
      */
     function RouteBeforeValidateCreateId (values, next){
-        
+
       values.id = new Buffer(values.verb + ':' + values.uri).toString('base64');
       next(null, values);
 
@@ -240,17 +240,19 @@ module.exports = {
           }
           return Promise.all(
               _.map(this.permissions, function (permission) {
-                  return Permission.findOrCreate(permission, permission); 
+                  return Permission.findOrCreate(permission, permission);
               })
           );
         })
         .then(function (permissions){
             sails.log.verbose('Route.AfterCreateGrantPermissions.permissions', permissions);
-            return next();
+            next();
+            return null;
         })
         .catch(function(e) {
             sails.log.error(e);
-            return next(e);
+            next(e);
+            return null;
         });
     },
 
@@ -261,7 +263,8 @@ module.exports = {
         sails.config._routeCache[route.id] = route;
         sails.log.verbose('Route.AfterCreateUpdateCache', route);
 
-        return next();
+        next();
+        return null;
       });
     }
   ],
@@ -273,7 +276,8 @@ module.exports = {
       .then(function(route){
         sails.config._routeCache[route.id] = route;
         sails.log.verbose('Route.AfterUpdateCache.route', route);
-        return next();
+        next();
+        return null;
       });
     }
   ]

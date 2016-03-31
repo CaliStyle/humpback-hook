@@ -7,9 +7,9 @@
  * Verify that User is satisfactorily related to the Object's owner.
  */
 module.exports = function(req, res, next) {
-  
+
   //console.log("Role Policy","DID I RUN?????");
-  
+
   if (req.options.modelUnlocked) {
     return next();
   }
@@ -26,7 +26,7 @@ module.exports = function(req, res, next) {
     return next();
   }
 
-  // if the action on the model is public (not a user) then let them pass; 
+  // if the action on the model is public (not a user) then let them pass;
   if (typeof req.options.modelDefinition.permissions['public'][action] !== 'undefined'){
     if(req.options.modelDefinition.permissions['public'][action].action){
       return next();
@@ -55,6 +55,7 @@ module.exports = function(req, res, next) {
       }
 
       next();
+      return null;
     })
     .catch(next);
 };
