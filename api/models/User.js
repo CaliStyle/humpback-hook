@@ -148,9 +148,11 @@ module.exports = {
           .then(function (passport) {
               delete values.password;
               next();
+              return null;
           })
           .catch(function (err) {
             next(err);
+            return null;
           });
       }
       else {
@@ -185,12 +187,14 @@ module.exports = {
             sails.log.silly('User.afterCreate.setOwner', user);
             User.update({ id: user.id }, { owner: user.id })
                 .then(function (user) {
-                next();
-            })
-            .catch(function (e) {
-                sails.log.error(e);
-                next(e);
-            });
+                    next();
+                    return null;
+                })
+                .catch(function (e) {
+                    sails.log.error(e);
+                    next(e);
+                    return null;
+                });
         },
 
         /**
@@ -221,10 +225,12 @@ module.exports = {
                 .then(function () {
                     sails.log.silly('role "registered" attached to user', this.user.username);
                     next();
+                    return null;
                 })
                 .catch(function (e) {
                   sails.log.error(e);
                   next(e);
+                  return null;
                 })
             );
         }
@@ -241,8 +247,7 @@ module.exports = {
             if (error) {
                 return reject(error);
             }
-
-            resolve(created);
+                resolve(created);
             });
         });
     }
