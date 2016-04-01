@@ -1,6 +1,10 @@
 'use strict';
 
 //dependencies
+var passport = require('passport');
+var http = require('http');
+var methods = ['login', 'logIn', 'logout', 'logOut', 'isAuthenticated', 'isUnauthenticated'];
+var cookieParser = require('cookie-parser')
 var _ = require('lodash');
 var Passport = require('passport').constructor;
 var path = require('path');
@@ -1097,6 +1101,7 @@ module.exports = function (sails) {
                 'all /*': [
                     //intercept all request and bundle passport onto it
                     function passport(req, res, next) {
+                      //sails.log.info('BEFORE ALL PASSPORT')
 
                         //Extend the request with additional passport options and Request Entries
                         req = _extendReq(req);
@@ -1112,8 +1117,43 @@ module.exports = function (sails) {
                                     return res.negotiate(err);
                                 }
 
+                                //console.log('req.user.id', req.user)
+
+                                req.session.user = req.user
+                                //req.session.save(next)
+
                                 //Move onto the next policies
-                                next();
+                                // Make the request's passport methods available for socket
+                                if (req.isSocket) {
+                                  require('lodash').each(methods, function (method) {
+                                    req[method] = http.IncomingMessage.prototype[method].bind(req);
+                                  });
+
+                                  var handshake = req.socket.handshake
+
+                                  cookieParser('hello')(handshake, null, function (err) {
+                                    handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid']
+                                    req.sessionID = handshake.sessionID
+
+                                    console.log('retrieving session', handshake.sessionID)
+
+                                    sails.config.http.store.get(handshake.sessionID, function (err, session) {
+                                      console.log('store.get session', session)
+                                      if (err || !session) {
+                                        //next('session not found')
+                                      }
+                                      else {
+                                        handshake.session = session
+                                        //Object.assign(req.session, handshake.session)
+                                        req.user = session.user
+                                      }
+                                      next()
+                                    })
+                                  })
+                                }
+                                else {
+                                  next();
+                                }
 
                             });
                         });
@@ -1147,6 +1187,8 @@ module.exports = function (sails) {
                             }
 
                             req.user = user;
+                            req.session.userId = user.id;
+                            req.session.user = user;
                             req.session.authenticated = true;
                             req.session.passport = passport;
 
