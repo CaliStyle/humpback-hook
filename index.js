@@ -1,10 +1,9 @@
 'use strict';
 
 //dependencies
-var passport = require('passport');
 var http = require('http');
 var methods = ['login', 'logIn', 'logout', 'logOut', 'isAuthenticated', 'isUnauthenticated'];
-var cookieParser = require('cookie-parser')
+var cookieParser = require('cookie-parser');
 var _ = require('lodash');
 var Passport = require('passport').constructor;
 var path = require('path');
@@ -1119,7 +1118,7 @@ module.exports = function (sails) {
 
                                 //console.log('req.user.id', req.user)
 
-                                req.session.user = req.user
+                                req.session.user = req.user;
                                 //req.session.save(next)
 
                                 //Move onto the next policies
@@ -1129,27 +1128,25 @@ module.exports = function (sails) {
                                     req[method] = http.IncomingMessage.prototype[method].bind(req);
                                   });
 
-                                  var handshake = req.socket.handshake
+                                  var handshake = req.socket.handshake;
 
                                   cookieParser('hello')(handshake, null, function (err) {
-                                    handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid']
-                                    req.sessionID = handshake.sessionID
-
-                                    console.log('retrieving session', handshake.sessionID)
+                                    handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid'];
+                                    req.sessionID = handshake.sessionID;
 
                                     sails.config.http.store.get(handshake.sessionID, function (err, session) {
-                                      console.log('store.get session', session)
                                       if (err || !session) {
+                                        sails.log.warn(err)
                                         //next('session not found')
                                       }
                                       else {
-                                        handshake.session = session
+                                        handshake.session = session;
                                         //Object.assign(req.session, handshake.session)
-                                        req.user = session.user
+                                        req.user = session.user;
                                       }
-                                      next()
-                                    })
-                                  })
+                                      next();
+                                    });
+                                  });
                                 }
                                 else {
                                   next();
