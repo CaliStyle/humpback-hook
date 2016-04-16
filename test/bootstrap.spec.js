@@ -18,9 +18,12 @@ var ConfigOverrides = require('../config/env/testing');
               return done(err);
           }
 
-          var Client = require('../assets/js/dependencies/sails.io.js');
-          global.io = new Client(require('socket.io-client'));
+          //var Client = require('../assets/js/dependencies/sails.io.js');
+          //global.io = new Client(require('socket.io-client'));
+          global.io = require('../assets/js/dependencies/sails.io.js')( require('socket.io-client') );
           io.sails.url = 'http://localhost:1337/';
+
+
           
           request(sails.hooks.http.app)
           .post('/register')

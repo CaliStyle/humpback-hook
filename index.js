@@ -300,7 +300,10 @@ module.exports = function (sails) {
                 userModelIdentity: 'user',
                 settingModelIdentity: 'setting',
                 adminUsername: process.env.ADMIN_USERNAME || 'admin',
-                adminPassword: process.env.ADMIN_PASSWORD || 'admin123'
+                adminPassword: process.env.ADMIN_PASSWORD || 'admin123',
+                session: {
+                    secret: process.env.SESSION_SECRET || 'hello'
+                }
             },
             // Defaults to look for a model w/ identity
             permission: {
@@ -1132,13 +1135,16 @@ module.exports = function (sails) {
 
                                   var handshake = req.socket.handshake;
 
-                                  cookieParser('hello')(handshake, null, function (err) {
+                                  cookieParser(sails.config.humpback.session.secret)(handshake, null, function (err) {
+                                    if(err){
+                                        sails.log.warn(err);
+                                    }
                                     handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid'];
                                     req.sessionID = handshake.sessionID;
 
                                     sails.config.http.store.get(handshake.sessionID, function (err, session) {
                                       if (err || !session) {
-                                        sails.log.warn(err)
+                                        sails.log.warn(err);
                                         //next('session not found')
                                       }
                                       else {
