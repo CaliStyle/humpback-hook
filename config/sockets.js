@@ -68,7 +68,7 @@ module.exports.sockets = {
   *                                                                          *
   ***************************************************************************/
 
-  grant3rdPartyCookie: true,
+  //grant3rdPartyCookie: true,
 
 
   /***************************************************************************
@@ -137,7 +137,7 @@ module.exports.sockets = {
   * transport should be disabled.                                            *
   *                                                                          *
   ***************************************************************************/
-  transports: ["websocket"]
+  //transports: ["websocket"]
 
 
   // More configuration options for Sails+Socket.io:

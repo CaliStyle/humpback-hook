@@ -1,7 +1,7 @@
 'use strict';
 
 var sails = require('sails');
-//var request = require('supertest');
+var request = require('supertest');
 var ConfigOverrides = require('../config/env/testing');
 
 //describe('Bootstrap tests ::', function() {
@@ -29,17 +29,17 @@ var ConfigOverrides = require('../config/env/testing');
           //io.sails.autoConnect = false;
           //io.sails.useCORSRouteToGetCookie = true;
           
-          // request(sails.hooks.http.app)
-          // .post('/register')
-          // .send({
-          //   email: 'existing.user@email.com',
-          //   password: 'admin123'
-          // })
-          // .end(function(err) {
-          //   done(err, sails);
-          // });
+          request(sails.hooks.http.app)
+          .post('/register')
+          .send({
+            email: 'existing.user@email.com',
+            password: 'admin123'
+          })
+          .end(function(err) {
+            done(err, sails);
+          });
           
-          done(null, sails);
+          //done(null, sails);
            
       });
     });

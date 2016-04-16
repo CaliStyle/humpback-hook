@@ -12,7 +12,7 @@ describe('Route Controller ::', function () {
 		
 	    it ('should be not found', function (done) {
 
-	        var agent = request.agent(sails.hooks.http.app);
+	        var agent = request(sails.hooks.http.app);
 	            
             agent
             .get('/hello')
@@ -25,7 +25,7 @@ describe('Route Controller ::', function () {
 
 	    it ('should be able to Login, create, and get route', function (done) {
 
-	        var agent = request.agent(sails.hooks.http.app);
+	        var agent = request(sails.hooks.http.app);
 
         	agent
 	            .post('/auth/local')
@@ -71,7 +71,7 @@ describe('Route Controller ::', function () {
 	    
 	    it ('should be able get Route', function (done) {
 
-	        var agent = request.agent(sails.hooks.http.app);
+	        var agent = request(sails.hooks.http.app);
 	            
             agent
 	            .get('/route/' + routeId)

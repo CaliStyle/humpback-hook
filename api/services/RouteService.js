@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+//var Promise = require('bluebird');
 var actionUtil = require('sails/lib/hooks/blueprints/actionUtil');
 
 var methodMap = {

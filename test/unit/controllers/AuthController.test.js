@@ -9,20 +9,20 @@ describe('Auth Controller ::', function () {
 
     describe('http request', function () {
 
-      it ('passport-local registration should succeed if email and password valid', function (done) {
+      // it ('passport-local registration should succeed if email and password valid', function (done) {
 
-        request(sails.hooks.http.app)
-          .post('/register')
-          .send({
-            email: 'existing.user@email.com',
-            password: 'admin123'
-          })
-          .expect(200)
-          .end(function(err) {
-            done(err, sails);
-          });
+      //   request(sails.hooks.http.app)
+      //     .post('/register')
+      //     .send({
+      //       email: 'existing.user@email.com',
+      //       password: 'admin123'
+      //     })
+      //     .expect(200)
+      //     .end(function(err) {
+      //       done(err, sails);
+      //     });
 
-      });
+      // });
 
       it ('passport-local authentication should succeed if email and password valid', function (done) {
 

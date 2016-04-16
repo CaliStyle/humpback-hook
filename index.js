@@ -111,14 +111,19 @@ function _extendReq(req) {
         req._passport.instance.serializeUser(user, req, function (err, obj) {
             if (err) {
                 req[property] = null;
+                sails.log.error(err);
                 return done(err);
             }
 
             if (!req._passport.session) {
-                throw new Error('req._passport missing session');
+              //  throw new Error('req._passport missing session, check session store');
+            }
+            if(obj){
+
             }
 
-            req._passport.session.user = obj;
+            //req._passport.session.user = obj;
+            //done(null, user.id);
             done();
         });
     };
@@ -281,7 +286,6 @@ function _initializeFixtures() {
  */
 function _initializeSettings() {
     return require('./lib/settings/core').syncSettings()
-        .bind({})
         .then(function (settings) {
             return settings;
         })
@@ -1055,7 +1059,7 @@ module.exports = function (sails) {
 
                 // Teach our Passport how to serialize/dehydrate a user object into an id
                 sails.passport.serializeUser(function (user, done) {
-                    sails.log('Using primary key', UserModel.primaryKey, 'with record:', user);
+                    sails.log.verbose('Using primary key', UserModel.primaryKey, 'with record:', user);
                     done(null, user[UserModel.primaryKey]);
                 });
 
@@ -1129,10 +1133,12 @@ module.exports = function (sails) {
                                     return res.negotiate(err);
                                 }
 
-                                //console.log('req.user.id', req.user)
+                                //console.log('req.user', req.user);
+
+                                //console.log(req._passport.instance._strategies);
 
                                 //req.session.user = req.user;
-                                req.session.save(next);
+                                //req.session.save(next);
                                 next();
                                 //Move onto the next policies
                                 // Make the request's passport methods available for socket
@@ -1200,8 +1206,8 @@ module.exports = function (sails) {
                             }
 
                             req.user = user;
-                            req.session.userId = user.id;
-                            req.session.user = user;
+                            //req.session.userId = user.id;
+                            //req.session.user = user;
                             req.session.authenticated = true;
                             req.session.passport = passport;
 
