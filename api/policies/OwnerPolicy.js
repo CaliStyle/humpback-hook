@@ -34,4 +34,5 @@ module.exports = function OwnerPolicy (req, res, next) {
 
   //sails.log('OwnerPolicy req.model', req.model);
   next();
+  return null;
 };

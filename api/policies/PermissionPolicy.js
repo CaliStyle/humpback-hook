@@ -72,7 +72,7 @@ function responsePolicy (_data, options) {
   //sails.log('options', options);
 
   // TODO search populated associations
-  Promise.bind(this)
+  Promise
     .map(data, function (object) {
       return user.getOwnershipRelation(data);
     })
@@ -85,7 +85,7 @@ function responsePolicy (_data, options) {
       });
 
       if (permitted.length === 0) {
-        //sails.log('permitted.length === 0');
+        sails.log('permitted.length === 0');
         return res.send(404);
       }
       else if (_.isArray(_data)) {

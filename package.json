@@ -7,6 +7,7 @@
     "isHook": true
   },
   "scripts": {
+    "pretest": "npm link",
     "test": "grunt test"
   },
   "repository": {
@@ -32,6 +33,7 @@
   ],
   "dependencies": {
     "bcryptjs": "^2.1.0",
+    "congruence": "^1.6.11",
     "passport": "^0.3.2",
     "pluralize": "^1.1.4",
     "waterline": "^0.12.1",
@@ -39,7 +41,7 @@
   },
   "devDependencies": {
     "chai": "^3.4.1",
-    "congruence": "^1.6.11",
+    
     "faker": "^2.1.2",
     "fnv-plus": "^1.2.12",
     "grunt": "^0.4.5",
@@ -52,6 +54,7 @@
     "sails-disk": "^0.10.7",
     "socket.io-client": "1.4.3",
     "supertest": "^1.1.1",
+    "supertest-as-promised": "^2.0.2",
     "passport-facebook": "^1.0.3",
     "passport-google": "^0.3.0",
     "passport-http": "^0.3.0",

@@ -17,8 +17,8 @@ module.exports = {
             var flashError = req.flash('error')[0];
             
             if (err || flashError) {
-                sails.log.warn(err);
-                sails.log.warn(flashError);
+                sails.log.warn("err:",err);
+                sails.log.warn("flash:",flashError);
             }
 
             if (err && !flashError ) {

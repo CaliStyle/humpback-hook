@@ -1,9 +1,9 @@
 'use strict';
 
 //dependencies
-var http = require('http');
-var methods = ['login', 'logIn', 'logout', 'logOut', 'isAuthenticated', 'isUnauthenticated'];
-var cookieParser = require('cookie-parser');
+//var http = require('http');
+//var methods = ['login', 'logIn', 'logout', 'logOut', 'isAuthenticated', 'isUnauthenticated'];
+//var cookieParser = require('cookie-parser');
 var _ = require('lodash');
 var Passport = require('passport').constructor;
 var path = require('path');
@@ -103,6 +103,7 @@ function _extendReq(req) {
         if (!req._passport) {
             throw new Error('passport.initialize() middleware not in use');
         }
+
         if (typeof done !== 'function') {
             throw new Error('req#login requires a callback function');
         }
@@ -112,6 +113,11 @@ function _extendReq(req) {
                 req[property] = null;
                 return done(err);
             }
+
+            if (!req._passport.session) {
+                throw new Error('req._passport missing session');
+            }
+
             req._passport.session.user = obj;
             done();
         });
@@ -1065,32 +1071,32 @@ module.exports = function (sails) {
                  * - Create Admin if nessecary
                  */
 
-                Promise.bind({}, ModelModel.count()
-                    .then(function (count) {
-                        if (count === sails.models.length) {
-                            return;
-                        }
+                ModelModel.count()
+                .then(function (count) {
+                    if (count === sails.models.length) {
+                        return;
+                    }
 
-                        return _initializeFixtures();
-                    })
-                    .then(function (initializedFixtures) {
-                        sails.log('humpback-hook: fixtures initialized', typeof initializedFixtures);
-                        return _initializeSettings();
-                    })
-                    .then(function (initializedSettings) {
-                        sails.log('humpback-hook: settings initialized', typeof initializedSettings);
-                        sails.emit('hook:humpback:loaded');
-                        // It's very important to trigger this callback method when you are finished
-                        // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
-                        next();
-                        return null;
-                    })
-                    .catch(function (error) {
-                        sails.log.error(error);
-                        next(error);
-                        return null;
-                    })
-                );
+                    return _initializeFixtures();
+                })
+                .then(function (initializedFixtures) {
+                    sails.log('humpback-hook: fixtures initialized', typeof initializedFixtures);
+                    return _initializeSettings();
+                })
+                .then(function (initializedSettings) {
+                    sails.log('humpback-hook: settings initialized', typeof initializedSettings);
+                    sails.emit('hook:humpback:loaded');
+                    // It's very important to trigger this callback method when you are finished
+                    // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
+                    next();
+                    return null;
+                })
+                .catch(function (error) {
+                    sails.log.error(error);
+                    next(error);
+                    return null;
+                });
+            
 
             });
 
@@ -1113,52 +1119,54 @@ module.exports = function (sails) {
                         // initialize passport on all routes for passport sockets
                         sails.passport.initialize()(req, res, function (err) {
                             if (err) {
+                                sails.log.error(err);
                                 return res.negotiate(err);
                             }
 
                             sails.passport.session()(req, res, function (err) {
                                 if (err) {
+                                    sails.log.error(err);
                                     return res.negotiate(err);
                                 }
 
                                 //console.log('req.user.id', req.user)
 
-                                req.session.user = req.user;
-                                //req.session.save(next)
-
+                                //req.session.user = req.user;
+                                req.session.save(next);
+                                next();
                                 //Move onto the next policies
                                 // Make the request's passport methods available for socket
-                                if (req.isSocket) {
-                                  require('lodash').each(methods, function (method) {
-                                    req[method] = http.IncomingMessage.prototype[method].bind(req);
-                                  });
+                                // if (req.isSocket) {
+                                //   require('lodash').each(methods, function (method) {
+                                //     req[method] = http.IncomingMessage.prototype[method].bind(req);
+                                //   });
 
-                                  var handshake = req.socket.handshake;
+                                //   var handshake = req.socket.handshake;
 
-                                  cookieParser(sails.config.humpback.session.secret)(handshake, null, function (err) {
-                                    if(err){
-                                        sails.log.warn(err);
-                                    }
-                                    handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid'];
-                                    req.sessionID = handshake.sessionID;
+                                //   cookieParser(sails.config.humpback.session.secret)(handshake, null, function (err) {
+                                //     if(err){
+                                //         sails.log.warn(err);
+                                //     }
+                                //     handshake.sessionID = handshake.signedCookies['connect.sid'] || handshake.cookies['connect.sid'];
+                                //     req.sessionID = handshake.sessionID;
 
-                                    sails.config.http.store.get(handshake.sessionID, function (err, session) {
-                                      if (err || !session) {
-                                        sails.log.warn(err);
-                                        //next('session not found')
-                                      }
-                                      else {
-                                        handshake.session = session;
-                                        //Object.assign(req.session, handshake.session)
-                                        req.user = session.user;
-                                      }
-                                      next();
-                                    });
-                                  });
-                                }
-                                else {
-                                  next();
-                                }
+                                //     sails.config.http.store.get(handshake.sessionID, function (err, session) {
+                                //       if (err || !session) {
+                                //         sails.log.warn(err);
+                                //         //next('session not found')
+                                //       }
+                                //       else {
+                                //         handshake.session = session;
+                                //         //Object.assign(req.session, handshake.session)
+                                //         req.user = session.user;
+                                //       }
+                                //       next();
+                                //     });
+                                //   });
+                                // }
+                                // else {
+                                //   next();
+                                // }
 
                             });
                         });

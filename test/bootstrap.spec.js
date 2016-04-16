@@ -1,7 +1,7 @@
 'use strict';
 
 var sails = require('sails');
-var request = require('supertest');
+//var request = require('supertest');
 var ConfigOverrides = require('../config/env/testing');
 
 //describe('Bootstrap tests ::', function() {
@@ -20,22 +20,26 @@ var ConfigOverrides = require('../config/env/testing');
 
           //var Client = require('../assets/js/dependencies/sails.io.js');
           //global.io = new Client(require('socket.io-client'));
+          global.navigator = {
+            userAgent: 'node.js'
+          };
           global.io = require('../assets/js/dependencies/sails.io.js')( require('socket.io-client') );
           io.sails.url = 'http://localhost:1337/';
-
-
+          io.sails.transports = ['websocket'];
+          //io.sails.autoConnect = false;
+          //io.sails.useCORSRouteToGetCookie = true;
           
-          request(sails.hooks.http.app)
-          .post('/register')
-          .send({
-            email: 'existing.user@email.com',
-            password: 'admin123'
-          })
-          .end(function(err) {
-            done(err, sails);
-          });
+          // request(sails.hooks.http.app)
+          // .post('/register')
+          // .send({
+          //   email: 'existing.user@email.com',
+          //   password: 'admin123'
+          // })
+          // .end(function(err) {
+          //   done(err, sails);
+          // });
           
-          //done(null, sails);
+          done(null, sails);
            
       });
     });
