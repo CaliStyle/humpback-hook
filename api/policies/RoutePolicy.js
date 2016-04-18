@@ -29,17 +29,19 @@ module.exports = function(req, res, next) {
 
 		RouteService.findUserRouteRoles(options)
 	    .then(function (roles) {
-	      sails.log.verbose('RoutePolicy:', roles.length, 'roles grant', req.method, 'on', req.route.uri);
-	      if (!roles || roles.length === 0) {
-	      	if(req.route.redirect && !req.isSocket){
-	      		return res.redirect(req.route.redirect);
-	      	}else{
-	        	return res.forbidden({ error: RouteService.getErrorMessage(options)});
-	        }
-	      }
+	    	sails.log.verbose('RoutePolicy:', roles.length, 'roles grant', req.method, 'on', req.route.uri);
+			if (!roles || roles.length === 0) {
+				if(req.route.redirect && !req.isSocket){
+					return res.redirect(req.route.redirect);
+				}else{
+					var err = new Error(RouteService.getErrorMessage(options));
+					sails.log.verbose(err);
+					return res.forbidden(err);
+				}
+			}
 
-	      next();
-				return null;
+	    	next();
+			return null;
 	    });
 	});
 

@@ -49,9 +49,9 @@ module.exports = function(req, res, next) {
       }
 
       if (!PermissionService.hasPassingCriteria(objects, permissions, body, req.user.id)) {
-        return res.badRequest({
-          error: 'Can\'t ' + action + ', because of failing where clause or attribute permissions'
-        });
+        var err = new Error('Can\'t ' + action + ', because of failing where clause or attribute permissions');
+        sails.log.verbose(err);
+        return res.badRequest(err);
       }
 
       next();
@@ -80,7 +80,7 @@ function responsePolicy(criteria, _data, options) {
 
   sails.log.silly('data', data);
   sails.log.silly('options', options);
-  sails.log.silly('criteria!', criteria);
+  sails.log.silly('criteria', criteria);
 
   var permitted = data.reduce(function(memo, item) {
     criteria.some(function(crit) {

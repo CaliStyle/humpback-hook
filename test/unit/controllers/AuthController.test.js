@@ -26,7 +26,7 @@ describe('Auth Controller ::', function () {
 
       it ('passport-local authentication should succeed if email and password valid', function (done) {
 
-        request(sails.hooks.http.app)
+        request.agent(sails.hooks.http.app)
             .post('/auth/local')
             .send({
               identifier: 'existing.user@email.com',
@@ -41,7 +41,7 @@ describe('Auth Controller ::', function () {
 
       it ('passport-local authentication should fail and return error code if email is invalid', function (done) {
 
-        request(sails.hooks.http.app)
+        request.agent(sails.hooks.http.app)
             .post('/auth/local')
             .send({
               identifier: 'invalid@email.com',
@@ -56,7 +56,7 @@ describe('Auth Controller ::', function () {
 
       it ('passport-local authentication should fail and return error code if password is invalid', function (done) {
 
-        request(sails.hooks.http.app)
+        request.agent(sails.hooks.http.app)
             .post('/auth/local')
             .send({
               identifier: 'existing.user@email.com',
@@ -71,7 +71,7 @@ describe('Auth Controller ::', function () {
 
     });
 
-    describe('socket request', function () {
+    describe('socket requests', function () {
 
       it ('passport-local authentication should succeed if email and password valid', function (done) {
 

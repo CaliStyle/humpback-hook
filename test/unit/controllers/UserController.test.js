@@ -126,10 +126,11 @@ describe('User Controller ::', function () {
     describe('http request', function () {
 
       var userId;
+      var agent;
 
-      it('should find user if they have been authenticated', function (done) {
+      it('it should authenticate', function (done) {
 
-        var agent = request.agent(sails.hooks.http.app);
+        agent = request.agent(sails.hooks.http.app);
 
         agent
             .post('/auth/local')
@@ -142,52 +143,39 @@ describe('User Controller ::', function () {
               if (err) {
                 return done(err);
               }
-
               userId = res.body.id;
+              done();
 
-              agent
-                  .get('/user/' + userId)
-                  .expect(200)
-                  .end(function (err) {
-                    done(err);
-                  });
             });
 
       });
 
-      it('should be able to update the password', function (done) {
-
-        var agent = request.agent(sails.hooks.http.app);
-
-        agent
-          .post('/auth/local')
-          .send({
-            identifier: 'existing.user@email.com',
-            password: 'admin123'
-          })
-          .expect(200, function (err, res) {
-
-            if (err) {
-              return done(err);
-            }
-
-            userId = res.body.id;
-
-            agent
-              .put('/user/' + userId)
-              .send({
-                password: 'admin1234'
-              })
-              .expect(200)
-              .end(function (err) {
-                done(err);
-              });
-          });
+      it ('it should find user if they have been authenticated', function(done) {
+          agent
+            .get('/user/' + userId)
+            .expect(200)
+            .end(function (err) {
+              done(err);
+            });
       });
 
-      it('should logout', function (done) {
+      it('should be able to update the password', function (done) {
 
-        var agent = request.agent(sails.hooks.http.app);
+          agent
+            .put('/user/' + userId)
+            .send({
+              password: 'admin1234'
+            })
+            .expect(200)
+            .end(function (err) {
+              done(err);
+            });
+         
+      });
+
+      it('it should logout', function (done) {
+
+        //var agent = request.agent(sails.hooks.http.app);
 
         agent
             .post('/logout')
@@ -201,9 +189,9 @@ describe('User Controller ::', function () {
       });
       
       
-      it('should not find user if unauthenticated', function (done) {
+      it('it should not find user if unauthenticated', function (done) {
 
-        var agent = request.agent(sails.hooks.http.app);
+        //var agent = request.agent(sails.hooks.http.app);
 
         agent
           .get('/user/' + userId)

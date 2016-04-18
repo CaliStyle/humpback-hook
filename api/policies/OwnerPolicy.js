@@ -8,12 +8,15 @@ module.exports = function OwnerPolicy (req, res, next) {
   
   //sails.log('OwnerPolicy()');
   if (req.options.modelUnlocked) {
+    sails.log.verbose('Owner Policy: Model is Unlocked')
     return next();
   }
 
   if (!req.user || !req.user.id) {
+    var err = new Error('Authenticiation Required');
+    sails.log.verbose(err);
     req.logout();
-    return res.forbidden({ error: 'Authenticiation Required' });
+    return res.forbidden(err);
     //return res.send(500, new Error('req.user is not set'));
   }
   
