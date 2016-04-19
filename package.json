@@ -35,7 +35,7 @@
     "bcryptjs": "^2.1.0",
     "congruence": "^1.6.11",
     "crypto": "0.0.3",
-    "passport": "^0.3.2",
+    "passport": "~0.2.2",
     "pluralize": "^1.1.4",
     "waterline": "^0.12.1",
     "waterline-criteria": "^0.11.1"

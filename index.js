@@ -96,7 +96,12 @@ function _extendReq(req) {
         }
         session = (options.session === undefined) ? true : options.session;
 
+        //console.log('PROPERTY',property);
+
         req[property] = user;
+
+        //sails.log.verbose('req.'+property, req[property]);
+
         if (!session) {
             return done && done();
         }
@@ -122,9 +127,9 @@ function _extendReq(req) {
 
             }
 
-            //req._passport.session.user = obj;
-            //done(null, user.id);
-            done();
+            req._passport.session.user = obj;
+            done(null, user.id);
+            //done();
         });
     };
 
@@ -937,6 +942,7 @@ module.exports = function (sails) {
                         }
                         else {
                             next(new Error('Invalid action'));
+                            return null;
                         }
                     } else {
                         if (action === 'disconnect' && req.user) {
@@ -1133,13 +1139,14 @@ module.exports = function (sails) {
                                     return res.negotiate(err);
                                 }
 
-                                //console.log('req.user', req.user);
+                                console.log('req.user', req.user);
 
                                 //console.log(req._passport.instance._strategies);
 
                                 //req.session.user = req.user;
                                 //req.session.save(next);
                                 next();
+                                return null;
                                 //Move onto the next policies
                                 // Make the request's passport methods available for socket
                                 // if (req.isSocket) {

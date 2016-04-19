@@ -8,7 +8,12 @@ module.exports = function ModelPolicy (req, res, next) {
   var modelCache = sails.config._modelCache;
   req.options.modelIdentity = actionUtil.parseModel(req).identity;
 
+  if(!modelCache || modelCache.length === 0){
+    sails.log.verbose('ModelPolicy: Model Cache is Empty');
+  }
+
   if (_.isEmpty(req.options.modelIdentity)) {
+    sails.log.verbose('ModelPolicy: Model Identity is Empty');
     return next();
   }
 
@@ -29,6 +34,9 @@ module.exports = function ModelPolicy (req, res, next) {
     }
 
     return next();
+  }
+  else{
+
   }
 
   sails.log.warn('Model [', req.options.modelIdentity, '] not found in model cache');
