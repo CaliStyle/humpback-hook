@@ -18,7 +18,8 @@ module.exports = function(req, res, next) {
 		if(req.options.routeUnlocked){
 			//Assume that this is handled by Model Permissions
 			//Or that this route is public;
-			return next();
+			next();
+			return null;
 		}
 
 		var options = {
