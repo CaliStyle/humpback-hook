@@ -1139,7 +1139,7 @@ module.exports = function (sails) {
                                     return res.negotiate(err);
                                 }
 
-                                console.log('req.user', req.user);
+                                //console.log('req.user', req.user);
 
                                 //console.log(req._passport.instance._strategies);
 
