@@ -1,6 +1,6 @@
 {
   "name": "humpback-hook",
-  "version": "0.11.68",
+  "version": "0.11.70",
   "description": "Humpback Core Hook",
   "main": "index.js",
   "sails": {
@@ -45,6 +45,7 @@
     "faker": "^2.1.2",
     "fnv-plus": "^1.2.12",
     "grunt": "^0.4.5",
+    "grunt-cli": "*",
     "grunt-contrib-jshint": "^0.11.1",
     "grunt-mocha-test": "^0.12.7",
     "jshint-stylish": "^1.0.1",
@@ -52,6 +53,7 @@
     "mocha": "^2.1.0",
     "sails": "^0.12.0",
     "sails-disk": "^0.10.7",
+    "sails-hook-sockets": "0.13.7",
     "socket.io-client": "1.4.3",
     "supertest": "^1.1.1",
     "supertest-as-promised": "^2.0.2",

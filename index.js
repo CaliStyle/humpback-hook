@@ -222,8 +222,16 @@ function _installModelOwnership(models) {
  * private
  */
 function _initializeFixtures() {
+    
+    var self = {
+        models: [],
+        roles: [],
+        admin: {},
+        routes: [] 
+    };
+
     return require('./lib/permissions/model').createModels()
-        .bind({})
+        //.bind({})
         .then(function (models) {
 
             if (models.length === 0) {
@@ -236,13 +244,16 @@ function _initializeFixtures() {
 
             sails.config._modelCache = _.indexBy(models, 'identity');
 
-            this.models = models;
+            self.models = models;
             return require('./lib/permissions/role').create();
         })
         .then(function (roles) {
-            this.roles = roles;
-            var userModel = _.find(this.models, {name: 'User'});
-            return require('./lib/permissions/user').create(this.roles, userModel);
+            
+            self.roles = roles;
+            
+            var userModel = _.find(self.models, {name: 'User'});
+
+            return require('./lib/permissions/user').create(self.roles, userModel);
         })
         .then(function () {
             var User = sails.models[sails.config.humpback.userModelIdentity];
@@ -258,26 +269,37 @@ function _initializeFixtures() {
             }
 
             user.owner = user.id;
-            this.admin = user; // in sails.js 0.12 it wouldn't return record after save
+            self.admin = user; // in sails.js 0.12 it wouldn't return record after save
 
-            return user.save();
+            return user.save()
+            .then(function(){
+                return user;
+            });
         })
-        .then(function () {
-            sails.log.silly('humpback-hook: admin user:', this.admin);
+        .then(function (admin) {
+            if (!admin) {
+                var err = new Error();
+                err.code = 'E_HOOK_INITIALIZE';
+                err.name = 'Humpback Hook Error';
+                err.message = 'humpback-hook: failed to update admin';
+                return err;
+            }
 
-            return require('./lib/permissions/route').createRoutes(this.roles, this.models, this.admin);
+            sails.log.verbose('humpback-hook: admin user:', self.admin);
+
+            return require('./lib/permissions/route').createRoutes(self.roles, self.models, self.admin);
         })
         .then(function (routes) {
             sails.log.silly('humpback-hook: routes', routes);
 
             sails.config._routeCache = _.indexBy(routes, 'id');
 
-            this.routes = routes;
+            self.routes = routes;
 
-            return require('./lib/permissions/permission').create(this.roles, this.models, this.routes, this.admin);
+            return require('./lib/permissions/permission').create(self.roles, self.models, self.routes, self.admin);
         })
         .then(function (permissions) {
-            this.permissions = permissions;
+            self.permissions = permissions;
             return permissions;
         })
         .catch(function (err) {
@@ -537,7 +559,7 @@ module.exports = function (sails) {
 
 
             //create globals
-            global.Promise = require('bluebird');
+            //global.Promise = require('bluebird');
             global._ = require('lodash');
             _.mixin(require('congruence'));
             //global.PermissionService = require('./lib/services/permission');
