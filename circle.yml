@@ -1,3 +1,4 @@
 machine:
   node:
     version: 4
+before_install: npm install -g grunt-cli    
