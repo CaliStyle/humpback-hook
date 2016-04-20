@@ -45,6 +45,7 @@
     "faker": "^2.1.2",
     "fnv-plus": "^1.2.12",
     "grunt": "^0.4.5",
+    "grunt-cli": "*",
     "grunt-contrib-jshint": "^0.11.1",
     "grunt-mocha-test": "^0.12.7",
     "jshint-stylish": "^1.0.1",
