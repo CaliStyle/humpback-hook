@@ -14,8 +14,6 @@ module.exports = function OwnerPolicy (req, res, next) {
 
   if (!req.user || !req.user.id) {
     
-    console.log(req.user);
-
     sails.log.verbose('OwnerPolicy: missing req.user and/or req.user.id');
     var err = new Error('Authenticiation Required');
     req.logout();
@@ -26,7 +24,6 @@ module.exports = function OwnerPolicy (req, res, next) {
   sails.log.verbose('OwnerPolicy user', req.user);
   sails.log.verbose('OwnerPolicy method', req.method);
   sails.log.verbose('OwnerPolicy req.body', req.body);
-  
 
   if (req.options.modelDefinition.autoCreatedBy === false) {
     sails.log.verbose('OwnerPolicy hasOwnershipPolicy: false');
