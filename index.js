@@ -1152,13 +1152,13 @@ module.exports = function (sails) {
                         sails.passport.initialize()(req, res, function (err) {
                             if (err) {
                                 sails.log.error(err);
-                                return res.negotiate(err);
+                                return next(err);
                             }
 
                             sails.passport.session()(req, res, function (err) {
                                 if (err) {
                                     sails.log.error(err);
-                                    return res.negotiate(err);
+                                    return next(err);
                                 }
 
                                 //console.log('req.user', req.user);
